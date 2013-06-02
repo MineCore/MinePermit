@@ -1,4 +1,4 @@
-package net.minepermit;
+package net.minecore.minepermit;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -7,10 +7,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.logging.Logger;
-
-import net.lotrcraft.minepermit.languages.InvalidLanguageFileException;
-import net.lotrcraft.minepermit.languages.TextManager;
-
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -25,14 +21,18 @@ public class Config {
 	public static boolean multiPermit;
 	public static boolean useVaultPermissions;
 
-	public static Logger log = Logger.getLogger("minecraft");
+	public Logger log = Logger.getLogger("minecraft");
+	private MinePermit mp;
+	private MinerManager mm;
+	public Config(MinePermit mn,MinerManager m)
+	{
+		mp  = mn;
+		mm = m;
+	}
 	private static Map<Integer, Integer> blocks = new TreeMap<Integer, Integer>();
 	
-	public static final File pluginFolder = new File("plugins" + File.separator + "MinePermit");
-	public static final File conf = new File(pluginFolder.getPath() + File.separator + "config.yml");
-	public static final File languageFolder = new File(pluginFolder.getPath() + File.separator + "languages");
 
-	public static void load(FileConfiguration config) throws IOException, InvalidConfigurationException{
+	public void load(FileConfiguration config) throws IOException, InvalidConfigurationException{
 		
 		universalCost = getInt("UniversalPermitCost", 300, config);
 		permitDuration = getLong("DefaultPermitDuration", 60, config);
@@ -40,19 +40,7 @@ public class Config {
 		multiPermit = getBoolean("AllowMultiPurchase", true, config);
 		useEconomyPlugin = getBoolean("UseVaultEconomy", false, config);
 		useVaultPermissions = getBoolean("UseVaultPermissions", false, config);
-		
-		
-		//Load language file
-		String tmp = getString("LanguageFile", null, config);
-		
-		try{
-			if(tmp != null)
-				TextManager.loadTextFromFile(new File(languageFolder.getPath() + File.separator + tmp));
-			log.info("[MinePermit] Language file succesfully loaded!");
-		} catch (InvalidLanguageFileException e){
-			log.warning("[MinePermit] Couldn't load language file! " + e.getMessage());
-		}
-
+	
 		ConfigurationSection sect = config.getConfigurationSection("Blocks");
 		Set<String> list;
 
@@ -78,7 +66,7 @@ public class Config {
 		File playerDataFolder = new File("plugins" + File.separator
 				+ "MinePermit" + File.separator + "Players");
 
-		MinePermit.log.info("[MinePermit] Loading Players...");
+		mp.log.info("[MinePermit] Loading Players...");
 
 		if (!playerDataFolder.exists()) {
 			playerDataFolder.mkdirs();
@@ -102,7 +90,7 @@ public class Config {
 				}
 
 				Miner m = loadPlayerConf(playerFiles[counter]);
-				MinerManager.addMiner(m);
+				mm.addMiner(m);
 
 				log.info("[MinePermit] " + m.getPlayer() + " loaded!");
 
@@ -146,10 +134,10 @@ public class Config {
 		return miner;
 	}
 
-	public static void savePlayerConf(Miner m) {
+	public void savePlayerConf(Miner m) {
 		YamlConfiguration g = new YamlConfiguration();
 		Map<Integer, Long> p = m.getPermits();
-		File f = new File(pluginFolder.getPath() + File.separator + "Players"
+		File f = new File(mp.getDataFolder().getPath() + File.separator + "Players"
 				+ File.separator + m.getPlayer() + ".yml");
 
 		try {

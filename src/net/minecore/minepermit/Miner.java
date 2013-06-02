@@ -1,4 +1,4 @@
-package net.minepermit;
+package net.minecore.minepermit;
 
 import java.util.Map;
 import java.util.TreeMap;

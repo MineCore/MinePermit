@@ -1,4 +1,4 @@
-package net.minepermit;
+package net.minecore.minepermit;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -7,10 +7,20 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 public class MinerManager {
+	
+	MinePermit mp;
+	Config conf;
+	public MinerManager(MinePermit mn,Config c)
+	{
+		conf = c;
+		mp = mn;
+		miners = new TreeMap<String, Miner>();
+	}
 
-	private static Map<String, Miner> miners = new TreeMap<String, Miner>();
+	
+	private Map<String, Miner> miners;
 
-	public static Miner getMiner(String playerName) {
+	public Miner getMiner(String playerName) {
 
 		Miner m = miners.get(playerName);
 
@@ -22,32 +32,32 @@ public class MinerManager {
 
 	}
 	
-	public static Miner getMiner(Player p) {
+	public Miner getMiner(Player p) {
 		return getMiner(p.getName());
 		
 	}
 
-	public static Miner addNewMiner(String playerName) {
+	public Miner addNewMiner(String playerName) {
 		return addNewMiner(Bukkit.getPlayerExact(playerName));
 
 	}
 
-	public static Miner addNewMiner(Player player) {
+	public Miner addNewMiner(Player player) {
 		return addMiner(new Miner(player.getName()));
 	}
 
-	public static Miner addMiner(Miner player) {
+	public Miner addMiner(Miner player) {
 		miners.put(player.getPlayer(), player);
 		return player;
 	}
 	
-	public static void savePlayers() {
+	public void savePlayers() {
 		
 		for(int y = 0; y < miners.size(); y++){
 			Miner m = miners.get(miners.keySet().toArray()[y]);
-			MinePermit.log.info("[MinePermit] Saving conf for " + m);
-			Config.savePlayerConf(m);
-			MinePermit.log.info("[MinePermit] Conf for " + m + " saved");
+			mp.log.info("Saving conf for " + m);
+			conf.savePlayerConf(m);
+			mp.log.info("Conf for " + m + " saved");
 		}
 		
 	}

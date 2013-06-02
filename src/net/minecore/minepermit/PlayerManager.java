@@ -1,6 +1,4 @@
-package net.minepermit;
-
-import net.milkbowl.vault.economy.EconomyResponse;
+package net.minecore.minepermit;
 
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -10,11 +8,13 @@ public class PlayerManager {
 	public static boolean charge(Player p, int amount) {
 		if (Config.useEconomyPlugin) {
 			
-			EconomyResponse r = MinePermit.econ.withdrawPlayer(p.getName(), amount);
+/*			EconomyResponse r = MinePermit.econ.withdrawPlayer(p.getName(), amount);
 			
 			if(r.transactionSuccess())
 				return true;
+				*/
 			return false;
+
 			
 		} else {
 			
@@ -36,10 +36,4 @@ public class PlayerManager {
 		
 	}
 	
-	public static boolean hasPerm(Player p, String perm){
-		if(Config.useVaultPermissions)
-			return MinePermit.perm.has(p.getWorld(), p.getName(), perm);
-		
-		return p.hasPermission(perm);
-	}
 }

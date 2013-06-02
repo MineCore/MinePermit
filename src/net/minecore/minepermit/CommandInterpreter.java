@@ -1,9 +1,6 @@
-package net.minepermit;
+package net.minecore.minepermit;
 
 import java.util.Map;
-
-import net.lotrcraft.minepermit.languages.TextManager;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -13,13 +10,20 @@ import org.bukkit.entity.Player;
 
 public class CommandInterpreter implements CommandExecutor {
 
+	private MinePermit mp;
+	private MinerManager mm;
+	public CommandInterpreter(MinePermit mn,MinerManager m)
+	{
+		mm = m;
+		mp  = mn;
+	}
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmnd, String arg2,
 			String[] arg3) {
 
-		// Console cant send commands
+		// Console can't send commands
 		if (sender instanceof ConsoleCommandSender) {
-			MinePermit.log.info("[MinePermit] Sorry, commands cant be sent from console yet.");
+			mp.log.info("Sorry, commands cant be sent from console yet.");
 			return true;
 		}
 
@@ -31,7 +35,7 @@ public class CommandInterpreter implements CommandExecutor {
 
 		} else if (arg3[0].equalsIgnoreCase("time")) {
 
-			Miner m = MinerManager.getMiner(p);
+			Miner m = mm.getMiner(p);
 
 			int id;
 
@@ -47,7 +51,7 @@ public class CommandInterpreter implements CommandExecutor {
 				}
 				
 				if(tmp.isEmpty()){
-					p.sendMessage("" + TextManager.NO_PERMITS_MESSAGE);
+					p.sendMessage("" + ChatColor.YELLOW + "You don't own any permits!");
 					return true;
 				}
 					
@@ -86,7 +90,7 @@ public class CommandInterpreter implements CommandExecutor {
 			}
 
 			if (!Config.isPermitRequired(id)) {
-				p.sendMessage("" + TextManager.PERMIT_NOT_REQUIRED);
+				p.sendMessage("" + ChatColor.GRAY + "A permit is not required for this item.");
 				return true;
 			}
 
@@ -109,38 +113,38 @@ public class CommandInterpreter implements CommandExecutor {
 					return false;
 				
 				//Check if the player already has the Universal permit
-				if(!Config.multiPermit && MinerManager.getMiner(p).hasUniversalPermit()){
-					p.sendMessage("" + TextManager.UNIVERSAL_PERMIT_ALREADY_OWNED);
+				if(!Config.multiPermit && mm.getMiner(p).hasUniversalPermit()){
+					p.sendMessage("" + ChatColor.YELLOW + "You already have a permit for this!");
 					return true;
 				}
 				
 				//Charge player if possible
 				if (!PlayerManager.charge(p, Config.universalCost)) {
-					p.sendMessage("" + TextManager.NOT_ENOUGH_MONEY);
+					p.sendMessage("" + ChatColor.DARK_RED + "You dont have enough money!");
 					return true;
 				}
 				
-				MinerManager.getMiner(p).addUniversalPermit(Config.permitDuration);
+				mm.getMiner(p).addUniversalPermit(Config.permitDuration);
 
-				p.sendMessage("" + TextManager.PURCHASE_SUCCESS);
+				p.sendMessage("" + ChatColor.DARK_GREEN + "Permit purchased!");
 				return true;
 			}
 
 			//Check if a permit is required for this block
 			if (!Config.isPermitRequired(id)) {
-				p.sendMessage("" + TextManager.PERMIT_NOT_REQUIRED);
+				p.sendMessage("" + ChatColor.GRAY + "A permit is not required for this item.");
 				return true;
 			}
 			
 			//Check if the player already has a permit for this
-			if(!Config.multiPermit && MinerManager.getMiner(p).hasPermit(id)){
-				p.sendMessage("" + TextManager.PERMIT_ALREADY_OWNED);
+			if(!Config.multiPermit && mm.getMiner(p).hasPermit(id)){
+				p.sendMessage("" + ChatColor.YELLOW + "You already have a permit for this!");
 				return true;
 			}
 			
 			//Charge player if possible
 			if (!PlayerManager.charge(p, Config.getCost(id))) {
-				p.sendMessage("" + TextManager.NOT_ENOUGH_MONEY);
+				p.sendMessage("" + ChatColor.DARK_RED + "You dont have enough money!");
 				return true;
 			}
 
@@ -148,9 +152,9 @@ public class CommandInterpreter implements CommandExecutor {
 
 
 
-			MinerManager.getMiner(p).addPermit(id, Config.permitDuration);
+			mm.getMiner(p).addPermit(id, Config.permitDuration);
 
-			p.sendMessage("" + TextManager.PURCHASE_SUCCESS);
+			p.sendMessage("" + ChatColor.DARK_GREEN + "Permit purchased!");
 
 			return true;
 		} else if (arg3[0].equalsIgnoreCase("view")) {

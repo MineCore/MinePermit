@@ -1,13 +1,20 @@
-package net.minepermit;
+package net.minecore.minepermit;
 
-import net.lotrcraft.minepermit.languages.TextManager;
-
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 
 public class BlockListener implements Listener {
+	
+	private MinerManager mm;
+	
+	public BlockListener(MinerManager m){
+		mm = m;
+	}
+	
+	
 	
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent e){
@@ -17,14 +24,14 @@ public class BlockListener implements Listener {
 		
 		Player p = e.getPlayer();
 		
-		if(PlayerManager.hasPerm(p, "MinePermit.exempt"))
+		if(p.hasPermission("MinePermit.exempt"))
 			return;
 		
 		
 		
-		if(!MinerManager.getMiner(p).hasPermit(e.getBlock().getTypeId())){
+		if(!mm.getMiner(p).hasPermit(e.getBlock().getTypeId())){
 			e.setCancelled(true);
-			p.sendMessage(TextManager.MISSING_PERMIT_ERROR + "");
+			p.sendMessage(ChatColor.DARK_RED + "You may not mine these blocks! Use /permit buy <id> to buy a permit." + "");
 		}
 		
 	}

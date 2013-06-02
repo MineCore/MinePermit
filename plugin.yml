@@ -1,8 +1,7 @@
-main: net.lotrcraft.minepermit.MinePermit
+main: net.minecore.minepermit.MinePermit
 author: Numenorean95
 name: MinePermit
-version: 1.3
-website: http://lotrcraft.net/plugins/minepermit
+version: 1.0.0
 softdepend: [Vault]
 
 commands:

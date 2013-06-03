@@ -189,6 +189,12 @@ public class CommandInterpreter implements CommandExecutor {
 			return true;
 
 		} 
+		
+		if(arg3[0].equals("wall"))
+		{
+			Wall w = new Wall(p.getLocation());
+			return true;
+		}
 
 		return false;
 	}

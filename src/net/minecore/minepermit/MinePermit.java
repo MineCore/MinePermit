@@ -3,13 +3,12 @@ package net.minecore.minepermit;
 import java.io.IOException;
 import java.util.logging.Logger;
 
+import net.minecore.Metrics;
+
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.plugin.java.JavaPlugin;
 //import net.milkbowl.vault.economy.Economy;
 //import net.milkbowl.vault.permission.Permission;
-
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.plugin.RegisteredServiceProvider;
-import org.bukkit.plugin.java.JavaPlugin;
 
 public class MinePermit extends JavaPlugin {
 
@@ -50,6 +49,13 @@ public class MinePermit extends JavaPlugin {
 		//Load permissions plugins
 		//Set the command executer
 		getCommand("permit").setExecutor(new CommandInterpreter(this,mm));
+		
+		try {
+			Metrics metrics = new Metrics(this);
+			metrics.start();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
 
 		log.info("MinePermit Enabled");
 

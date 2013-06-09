@@ -1,7 +1,9 @@
 main: net.minecore.minepermit.MinePermit
 author: Numenorean95
+authors: [tcoan98]
 name: MinePermit
-version: 1.0.0
+version: 1.1
+depend:  [MineCore]
 softdepend: [Vault]
 
 commands:
@@ -17,6 +19,12 @@ commands:
             /<command> wall
 
 permissions:
+    MinePermit.buy
+        description: Required to use all commands having tto do with permits
+        default: true
     MinePermit.exempt:
         description: Exempts player from mining permit requirements
+        default: false
+    MinePermit.admin
+        desription: Required for all admin commands
         default: op

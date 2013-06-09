@@ -15,22 +15,25 @@ public class MinePermit extends JavaPlugin {
 	private MinerManager mm;
 	private Config c;
 	
-	public Logger log = Logger.getLogger("minecraft");
-	//public static Economy econ;
-	FileConfiguration conf;
-	//public static Permission perm;
+	public Logger log;
+	private FileConfiguration conf;
+	
 	@Override
 	public void onLoad()
 	{
+		log = this.getLogger();
 		mm = new MinerManager(this, c);
+		
+		conf = this.getConfig();
+		
 	}
 
 	@Override
 	public void onDisable() {
 
-		log.info("[MinePermit] Saving players...");
+		log.info("Saving players...");
 		mm.savePlayers();
-		log.info("[MinePermit] Players saved!");
+		log.info("Players saved!");
 		log.info("MinePermit Disabled");
 
 	}
@@ -39,14 +42,9 @@ public class MinePermit extends JavaPlugin {
 	public void onEnable() {
 
 		//Register the blockListener
-		this.getServer().getPluginManager()
-				.registerEvents(new BlockListener(mm), this);
+		this.getServer().getPluginManager().registerEvents(new BlockListener(mm), this);
 		
 		//load settings from conf
-
-		//Load economy plugins
-		
-		//Load permissions plugins
 		//Set the command executer
 		getCommand("permit").setExecutor(new CommandInterpreter(this,mm));
 		
@@ -57,7 +55,7 @@ public class MinePermit extends JavaPlugin {
 			e1.printStackTrace();
 		}
 
-		log.info("MinePermit Enabled");
+		log.info("MinePermit Enabled!");
 
 	}
 

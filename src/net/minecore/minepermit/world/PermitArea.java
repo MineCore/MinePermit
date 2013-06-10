@@ -3,6 +3,8 @@
  */
 package net.minecore.minepermit.world;
 
+import net.minecore.minepermit.price.PriceList;
+
 import org.bukkit.Location;
 import org.bukkit.World;
 
@@ -12,6 +14,8 @@ import org.bukkit.World;
  */
 public abstract class PermitArea {
 	
+	private int effective_depth;
+
 	/**
 	 * Tests if this PermitArea contains the given point
 	 * @param l Location to test
@@ -35,7 +39,13 @@ public abstract class PermitArea {
 	 * Gets the depth at which permits are relevant.
 	 * @return A Y-Coord between 0 and the world height limit.
 	 */
-	public abstract int getEffectiveDepth();
+	public int getEffectiveDepth(){
+		return effective_depth;
+	}
+	
+	public void setEffectiveDepth(int y){
+		effective_depth = y;
+	}
 	
 	/**
 	 * Gets the world that this area is contained in.
@@ -57,8 +67,38 @@ public abstract class PermitArea {
 	 * @param id The id of the material to check
 	 * @return The price, or -1 if a permit is not required
 	 */
-	public abstract int getPrice(int id);
+	public int getPrice(int id){
+		return getPrices().getPrice(id);
+	}
 	
+	/**
+	 * Gets the lowest level PermitArea that contains this location. 
+	 * Thus this could return a PermitArea that is contained entirely within this PermitArea, or one contained in a PermitArea that is contained
+	 * in this PermitArea, and so on. This allows for infinite levels of PermitAreas, and so Inception.
+	 * @param l The location to check
+	 * @return A PermitArea, possibly this one, that contains the given point as per above. If it is not contained in this PermitArea returns null.
+	 */
+	public abstract PermitArea getRelevantPermitArea(Location l);
 	
-
+	/**
+	 * Adds the given PermitArea to this PermitArea as a child PermitArea. See concepts relating to Inception in getRelevantPermitArea(). 
+	 * The given PermitArea must be completely contained in this PermitArea, and it must have a unique name.
+	 * @param pa The PermitArea to add
+	 * @return True if the PermitArea could be added, false otherwise
+	 */
+	public abstract boolean addPermitArea(PermitArea pa);
+	
+	/**
+	 * Gets and removes the child PermitArea with this name.
+	 * @param name Name of the PermitArea to remove.
+	 * @return The PermitArea, or null if it is not contained in this PermitArea.
+	 */
+	public abstract PermitArea removePermitArea(String name);
+	
+	/**
+	 * Gets the child PermitArea with this name.
+	 * @param name The name of the child PermitArea to get.
+	 * @return The PermitArea or null if there is no child PermitArea with the given name.
+	 */
+	public abstract PermitArea getPermitArea(String name);
 }

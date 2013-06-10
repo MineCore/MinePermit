@@ -29,7 +29,7 @@ public abstract class PermitArea {
 	 * Gets the prices of all the required permits for this area.
 	 * @return A PermitPriceList that as all prices defined.
 	 */
-	public abstract PermitPriceList getPrices();
+	public abstract PriceList getPrices();
 	
 	/**
 	 * Gets the depth at which permits are relevant.
@@ -41,14 +41,23 @@ public abstract class PermitArea {
 	 * Gets the world that this area is contained in.
 	 * @return A World
 	 */
-	public World getWorld();
+	public abstract World getWorld();
 	
 	/**
 	 * Checks if the given block must have a permit to be mined
 	 * @param id block id of the material to be checked.
 	 * @return True if a permit is required 
 	 */
-	public boolean requiresPermit(int id);
+	public boolean requiresPermit(int id){
+		return getPrices().getPrice(id) != -1;
+	}
+	
+	/**
+	 * Gets the price to buy this permit.
+	 * @param id The id of the material to check
+	 * @return The price, or -1 if a permit is not required
+	 */
+	public abstract int getPrice(int id);
 	
 	
 

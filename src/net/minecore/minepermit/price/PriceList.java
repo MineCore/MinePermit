@@ -1,4 +1,4 @@
-package net.minecore.minepermit.world;
+package net.minecore.minepermit.price;
 
 import java.util.Map;
 
@@ -20,9 +20,15 @@ public interface PriceList {
 	public Map<Integer, Integer> getPrices();
 	
 	/**
-	 * Gets this PermitPriceList as a ConfigurationSection
-	 * @return A ConfigurationSection that contains all the Data neccessary to reproduce this PermitPriceList
+	 * Saves this PriceList in the given ConfigurationSection
 	 */
-	public ConfigurationSection getConfRepresentation();
+	public void saveToConf(ConfigurationSection cs);
+	
+	/**
+	 * Sets the cost for the given material id
+	 * @param id ID of the material to set the cost of.
+	 * @param cost Cost to set it to
+	 */
+	public void setPrice(int id, int cost);
 
 }

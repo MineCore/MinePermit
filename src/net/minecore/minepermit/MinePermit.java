@@ -7,8 +7,6 @@ import net.minecore.Metrics;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
-//import net.milkbowl.vault.economy.Economy;
-//import net.milkbowl.vault.permission.Permission;
 
 public class MinePermit extends JavaPlugin {
 
@@ -25,6 +23,8 @@ public class MinePermit extends JavaPlugin {
 		mm = new MinerManager(this, c);
 		
 		conf = this.getConfig();
+		
+		
 		
 	}
 
@@ -44,7 +44,6 @@ public class MinePermit extends JavaPlugin {
 		//Register the blockListener
 		this.getServer().getPluginManager().registerEvents(new BlockListener(mm), this);
 		
-		//load settings from conf
 		//Set the command executer
 		getCommand("permit").setExecutor(new CommandInterpreter(this,mm));
 		

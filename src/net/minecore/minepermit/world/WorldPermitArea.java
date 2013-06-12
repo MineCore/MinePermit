@@ -49,6 +49,9 @@ public class WorldPermitArea extends PermitArea {
 		if(getPermitArea(pa.getName()) != null)
 			return false;
 		
+		if(!pa.getWorld().equals(w))
+			return false;
+		
 		//TODO: Check contains in this but not children.
 		
 		getChildren().put(pa.getName(), pa);

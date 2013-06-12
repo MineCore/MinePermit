@@ -9,12 +9,18 @@ import org.bukkit.World;
 public class LocationPermitArea extends PermitArea {
 	
 	private String name;
+	private Location l1, l2;
 
-	public LocationPermitArea(String name, PriceList pl) {
+	public LocationPermitArea(Location l1, Location l2, String name, PriceList pl) {
 		
 		super(name, pl);
 		
+		if(!l1.getWorld().equals(l2.getWorld()))
+			throw new InvalidParameterException("Locations must be in same world!");
+		
 		this.name = name;
+		this.l1 = l1;
+		this.l2 = l2;
 	}
 
 	@Override
@@ -30,8 +36,7 @@ public class LocationPermitArea extends PermitArea {
 
 	@Override
 	public World getWorld() {
-		// TODO Auto-generated method stub
-		return null;
+		return l1.getWorld();
 	}
 
 	@Override
@@ -56,6 +61,14 @@ public class LocationPermitArea extends PermitArea {
 	public void setName(String name) {
 		this.name = name;
 		
+	}
+	
+	public Location getLocation1(){
+		return l1;
+	}
+	
+	public Location getLocation2(){
+		return l2;
 	}
 
 }

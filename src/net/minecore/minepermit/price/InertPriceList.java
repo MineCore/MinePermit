@@ -16,7 +16,7 @@ public class InertPriceList implements PriceList {
 	@Override
 	public int getPrice(int id) {
 		Object o = prices.get(id);
-		return (int) (o == null ? -1 : o);
+		return (Integer) (o == null ? -1 : o);
 	}
 
 	@Override

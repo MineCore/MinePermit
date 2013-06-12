@@ -1,47 +1,44 @@
 package net.minecore.minepermit.world;
 
 import java.security.InvalidParameterException;
-
 import net.minecore.minepermit.price.PriceList;
 
 import org.bukkit.Location;
 import org.bukkit.World;
 
-public class WorldPermitArea extends PermitArea {
+public class LocationPermitArea extends PermitArea {
+	
+	private String name;
 
-	private World w;
-
-	public WorldPermitArea(World w, PriceList pl) {
+	public LocationPermitArea(String name, PriceList pl) {
 		
-		super(w.getName(), pl);
+		super(name, pl);
 		
-		this.w = w;
+		this.name = name;
 	}
 
 	@Override
 	public boolean contains(Location l) {
-		return l.getWorld().getName().equals(w.getName());
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 	@Override
 	public String getName() {
-		return w.getName();
+		return name;
 	}
 
 	@Override
 	public World getWorld() {
-		return w;
-	}
-
-	@Override
-	public void setName(String name) {
-		//Can't change name.
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
 	public boolean addPermitArea(PermitArea pa) {
+		
 		if(pa == null)
-			throw new InvalidParameterException("You cannot add a null PermitArea!");
+			throw new InvalidParameterException("You cannot add a null permit area!");
 		
 		if(pa instanceof WorldPermitArea)
 			return false;
@@ -53,6 +50,12 @@ public class WorldPermitArea extends PermitArea {
 		
 		getChildren().put(pa.getName(), pa);
 		return true;
+	}
+
+	@Override
+	public void setName(String name) {
+		this.name = name;
+		
 	}
 
 }

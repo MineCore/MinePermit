@@ -3,6 +3,10 @@
  */
 package net.minecore.minepermit.world;
 
+import java.security.InvalidParameterException;
+import java.util.Map;
+import java.util.TreeMap;
+
 import net.minecore.minepermit.price.PriceList;
 
 import org.bukkit.Location;
@@ -14,7 +18,18 @@ import org.bukkit.World;
  */
 public abstract class PermitArea {
 	
+	private Map<String, PermitArea> children;
+	private PriceList pl;
 	private int effective_depth;
+	
+	public PermitArea(String name, PriceList pl){
+		
+		if(pl == null)
+			throw new InvalidParameterException("PriceList can not be null!");
+		
+		this.pl = pl;
+		children = new TreeMap<String, PermitArea>();
+	}
 
 	/**
 	 * Tests if this PermitArea contains the given point
@@ -30,10 +45,18 @@ public abstract class PermitArea {
 	public abstract String getName();
 	
 	/**
+	 * Sets the name of this PermitArea
+	 * @param name The name to set
+	 */
+	public abstract void setName(String name);
+	
+	/**
 	 * Gets the prices of all the required permits for this area.
 	 * @return A PermitPriceList that as all prices defined.
 	 */
-	public abstract PriceList getPrices();
+	public PriceList getPrices(){
+		return pl;
+	}
 	
 	/**
 	 * Gets the depth at which permits are relevant.
@@ -78,7 +101,20 @@ public abstract class PermitArea {
 	 * @param l The location to check
 	 * @return A PermitArea, possibly this one, that contains the given point as per above. If it is not contained in this PermitArea returns null.
 	 */
-	public abstract PermitArea getRelevantPermitArea(Location l);
+	public PermitArea getRelevantPermitArea(Location l){
+		if(!contains(l))
+			return null;
+		
+		for(String s : children.keySet()){
+			PermitArea pa = children.get(s).getRelevantPermitArea(l);
+			
+			if(pa != null)
+				return pa;
+			
+		}
+		
+		return this;
+	}
 	
 	/**
 	 * Adds the given PermitArea to this PermitArea as a child PermitArea. See concepts relating to Inception in getRelevantPermitArea(). 
@@ -93,12 +129,24 @@ public abstract class PermitArea {
 	 * @param name Name of the PermitArea to remove.
 	 * @return The PermitArea, or null if it is not contained in this PermitArea.
 	 */
-	public abstract PermitArea removePermitArea(String name);
+	public PermitArea removePermitArea(String name) {
+		return children.remove(name);
+	}
 	
 	/**
 	 * Gets the child PermitArea with this name.
-	 * @param name The name of the child PermitArea to get.
+	 * @param name The name of the chimmmmmmld PermitArea to get.
 	 * @return The PermitArea or null if there is no child PermitArea with the given name.
 	 */
-	public abstract PermitArea getPermitArea(String name);
+	public PermitArea getPermitArea(String name){
+		return children.get(name);
+	}
+	
+	/**
+	 * Gets all the children contained in this PermitArea
+	 * @return A potentially empty Map with the name of the area as the Key.
+	 */
+	public Map<String, PermitArea> getChildren(){
+		return children;
+	}
 }

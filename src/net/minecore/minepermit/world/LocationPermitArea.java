@@ -6,7 +6,7 @@ import net.minecore.minepermit.price.PriceList;
 import org.bukkit.Location;
 import org.bukkit.World;
 
-public class LocationPermitArea extends PermitArea {
+public class LocationPermitArea extends ContainablePermitArea {
 	
 	private String name;
 	private Location l1, l2;
@@ -40,21 +40,11 @@ public class LocationPermitArea extends PermitArea {
 	}
 
 	@Override
-	public boolean addPermitArea(PermitArea pa) {
-		
-		if(pa == null)
-			throw new InvalidParameterException("You cannot add a null permit area!");
-		
-		if(pa instanceof WorldPermitArea)
-			return false;
-		
-		if(getPermitArea(pa.getName()) != null)
-			return false;
+	public boolean addPermitArea(ContainablePermitArea pa) {
 		
 		//TODO: Check contains in this but not children.
 		
-		getChildren().put(pa.getName(), pa);
-		return true;
+		return super.addPermitArea(pa);
 	}
 
 	@Override

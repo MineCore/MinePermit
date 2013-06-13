@@ -18,7 +18,7 @@ import org.bukkit.World;
  */
 public abstract class PermitArea {
 	
-	private Map<String, PermitArea> children;
+	private Map<String, ContainablePermitArea> children;
 	private PriceList pl;
 	private int effective_depth;
 	
@@ -28,7 +28,7 @@ public abstract class PermitArea {
 			throw new InvalidParameterException("PriceList can not be null!");
 		
 		this.pl = pl;
-		children = new TreeMap<String, PermitArea>();
+		children = new TreeMap<String, ContainablePermitArea>();
 	}
 
 	/**
@@ -122,14 +122,24 @@ public abstract class PermitArea {
 	 * @param pa The PermitArea to add
 	 * @return True if the PermitArea could be added, false otherwise
 	 */
-	public abstract boolean addPermitArea(PermitArea pa);
+	public boolean addPermitArea(ContainablePermitArea pa){
+		if(pa == null)
+			throw new InvalidParameterException("You cannot add a null permit area!");
+		
+		if(getPermitArea(pa.getName()) != null)
+			return false;
+		
+		getChildren().put(pa.getName(), pa);
+		
+		return true;
+	}
 	
 	/**
 	 * Gets and removes the child PermitArea with this name.
 	 * @param name Name of the PermitArea to remove.
 	 * @return The PermitArea, or null if it is not contained in this PermitArea.
 	 */
-	public PermitArea removePermitArea(String name) {
+	public ContainablePermitArea removePermitArea(String name) {
 		return children.remove(name);
 	}
 	
@@ -138,7 +148,7 @@ public abstract class PermitArea {
 	 * @param name The name of the chimmmmmmld PermitArea to get.
 	 * @return The PermitArea or null if there is no child PermitArea with the given name.
 	 */
-	public PermitArea getPermitArea(String name){
+	public ContainablePermitArea getPermitArea(String name){
 		return children.get(name);
 	}
 	
@@ -146,7 +156,7 @@ public abstract class PermitArea {
 	 * Gets all the children contained in this PermitArea
 	 * @return A potentially empty Map with the name of the area as the Key.
 	 */
-	public Map<String, PermitArea> getChildren(){
+	public Map<String, ContainablePermitArea> getChildren(){
 		return children;
 	}
 }

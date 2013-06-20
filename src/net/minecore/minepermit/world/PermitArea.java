@@ -21,11 +21,14 @@ public abstract class PermitArea {
 	private Map<String, ContainablePermitArea> children;
 	private PriceList pl;
 	private int effective_depth;
+	private String name;
 	
 	public PermitArea(String name, PriceList pl){
 		
 		if(pl == null)
 			throw new InvalidParameterException("PriceList can not be null!");
+		
+		this.name = name;
 		
 		this.pl = pl;
 		children = new TreeMap<String, ContainablePermitArea>();
@@ -42,13 +45,17 @@ public abstract class PermitArea {
 	 * Gets the name of this PermitArea
 	 * @return The name, or null if it doesnt have one.
 	 */
-	public abstract String getName();
+	public String getName(){
+		return name;
+	}
 	
 	/**
 	 * Sets the name of this PermitArea
 	 * @param name The name to set
 	 */
-	public abstract void setName(String name);
+	public void setName(String name){
+		this.name = name;
+	}
 	
 	/**
 	 * Gets the prices of all the required permits for this area.

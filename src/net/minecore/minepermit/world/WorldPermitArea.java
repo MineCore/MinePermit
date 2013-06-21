@@ -94,4 +94,22 @@ public class WorldPermitArea extends PermitArea {
 		return area;
 	}
 
+	@Override
+	public void saveToConfiguration(ConfigurationSection cs) {
+		
+		cs.set("prices", null);
+		ConfigurationSection prices = cs.createSection("prices");
+		
+		for(int i : this.getPrices().getPrices().keySet())
+			prices.set(i + "", this.getPrices().getPrice(i));
+		
+		cs.set("children", null);
+		ConfigurationSection children = cs.createSection("children");
+		
+		for(String s : this.getChildren().keySet()){
+			this.getPermitArea(s).saveToConfiguration(children.createSection(s));
+		}
+		
+	}
+
 }

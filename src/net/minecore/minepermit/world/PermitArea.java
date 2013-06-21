@@ -11,6 +11,7 @@ import net.minecore.minepermit.price.PriceList;
 
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.configuration.ConfigurationSection;
 
 /**
  * @author Numenorean95
@@ -152,7 +153,7 @@ public abstract class PermitArea {
 	
 	/**
 	 * Gets the child PermitArea with this name.
-	 * @param name The name of the chimmmmmmld PermitArea to get.
+	 * @param name The name of the child PermitArea to get.
 	 * @return The PermitArea or null if there is no child PermitArea with the given name.
 	 */
 	public ContainablePermitArea getPermitArea(String name){
@@ -166,4 +167,11 @@ public abstract class PermitArea {
 	public Map<String, ContainablePermitArea> getChildren(){
 		return children;
 	}
+	
+	/**
+	 * Saves the data in this PermitArea to the given Configuration.
+	 * @param cs The ConfigurationSection to save to.
+	 */
+	public abstract void saveToConfiguration(ConfigurationSection cs);
+	
 }

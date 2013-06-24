@@ -25,6 +25,11 @@ public class WorldPermitArea extends PermitArea {
 	}
 	
 	@Override
+	public boolean contains(PermitArea pa){
+		return pa.getWorld().equals(w);
+	}
+	
+	@Override
 	public boolean intersects(PermitArea pa){
 		return pa.getWorld().equals(w);
 	}
@@ -50,9 +55,25 @@ public class WorldPermitArea extends PermitArea {
 		if (!pa.getWorld().equals(w))
 			return false;
 
-		for(PermitArea ch : this.getChildren().values())
-			if(ch.intersects(pa) || pa.intersects(ch))
+		for(ContainablePermitArea ch : this.getChildren().values())
+			if(ch.intersects(pa)){
+				
+				if(pa.contains(ch)){
+					pa.addPermitArea(ch);
+					this.removeChildPermitArea(ch.getName());
+					return super.addPermitArea(pa);
+				}
+				
 				return false;
+				
+			} else if(pa.intersects(ch)){
+				
+				if(ch.contains(pa)){
+					return ch.addPermitArea(pa);
+				}
+				
+				return false;
+			}
 
 		return super.addPermitArea(pa);
 	}

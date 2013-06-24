@@ -43,6 +43,13 @@ public abstract class PermitArea {
 	public abstract boolean contains(Location l);
 	
 	/**
+	 * Checks if the given PermitArea is entirely contained in this PermitArea
+	 * @param pa PermitArea to check
+	 * @return True if it is entirely contained in this area, including if they share any borders.
+	 */
+	public abstract boolean contains(PermitArea pa);
+	
+	/**
 	 * Checks to see whether the given PermitArea is at all contained in this
 	 * PermitArea
 	 * @param pa The PermitArea to check

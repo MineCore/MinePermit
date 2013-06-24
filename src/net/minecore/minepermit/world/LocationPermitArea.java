@@ -27,13 +27,36 @@ public class LocationPermitArea extends ContainablePermitArea {
 
 	@Override
 	public boolean contains(Location l) {
-		// TODO Auto-generated method stub
+		
+		int higherX = Math.max(l1.getBlockX(), l2.getBlockX());
+		int lowerX = Math.min(l1.getBlockX(), l2.getBlockX());
+		
+		int higherZ = Math.max(l1.getBlockZ(), l2.getBlockZ());
+		int lowerZ = Math.min(l1.getBlockZ(), l2.getBlockZ());
+		
+		if(l.getBlockX() >= lowerX && l.getBlockX() <= higherX && l.getBlockZ() >= lowerZ && l.getBlockZ() <= higherZ)
+			return true;
+		
 		return false;
 	}
 	
 	@Override
 	public boolean intersects(PermitArea pa){
-		//TODO:
+		
+		int higherX = Math.max(l1.getBlockX(), l2.getBlockX());
+		int lowerX = Math.min(l1.getBlockX(), l2.getBlockX());
+		
+		int higherZ = Math.max(l1.getBlockZ(), l2.getBlockZ());
+		int lowerZ = Math.min(l1.getBlockZ(), l2.getBlockZ());
+		
+		Location l1 = new Location(getWorld(), higherX, 0, higherZ);
+		Location l2 = new Location(getWorld(), higherX, 0, lowerZ);
+		Location l3 = new Location(getWorld(), lowerX, 0, higherZ);
+		Location l4 = new Location(getWorld(), lowerX, 0, lowerZ);
+		
+		if(pa.contains(l1) || pa.contains(l2) || pa.contains(l3) || pa.contains(l4))
+			return true;
+		
 		return false;
 	}
 

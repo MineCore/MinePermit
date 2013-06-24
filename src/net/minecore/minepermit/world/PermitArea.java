@@ -43,6 +43,14 @@ public abstract class PermitArea {
 	public abstract boolean contains(Location l);
 	
 	/**
+	 * Checks to see whether the given PermitArea is at all contained in this
+	 * PermitArea
+	 * @param pa The PermitArea to check
+	 * @return True if it is contained,false otherwise
+	 */
+	public abstract boolean intersects(PermitArea pa);
+	
+	/**
 	 * Gets the name of this PermitArea
 	 * @return The name, or null if it doesnt have one.
 	 */
@@ -134,7 +142,7 @@ public abstract class PermitArea {
 		if(pa == null)
 			throw new InvalidParameterException("You cannot add a null permit area!");
 		
-		if(getPermitArea(pa.getName()) != null)
+		if(getChildPermitArea(pa.getName()) != null)
 			return false;
 		
 		getChildren().put(pa.getName(), pa);
@@ -147,7 +155,7 @@ public abstract class PermitArea {
 	 * @param name Name of the PermitArea to remove.
 	 * @return The PermitArea, or null if it is not contained in this PermitArea.
 	 */
-	public ContainablePermitArea removePermitArea(String name) {
+	public ContainablePermitArea removeChildPermitArea(String name) {
 		return children.remove(name);
 	}
 	
@@ -156,7 +164,7 @@ public abstract class PermitArea {
 	 * @param name The name of the child PermitArea to get.
 	 * @return The PermitArea or null if there is no child PermitArea with the given name.
 	 */
-	public ContainablePermitArea getPermitArea(String name){
+	public ContainablePermitArea getChildPermitArea(String name){
 		return children.get(name);
 	}
 	

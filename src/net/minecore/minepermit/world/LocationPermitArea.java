@@ -30,6 +30,12 @@ public class LocationPermitArea extends ContainablePermitArea {
 		// TODO Auto-generated method stub
 		return false;
 	}
+	
+	@Override
+	public boolean intersects(PermitArea pa){
+		//TODO:
+		return false;
+	}
 
 	@Override
 	public World getWorld() {
@@ -39,9 +45,9 @@ public class LocationPermitArea extends ContainablePermitArea {
 	@Override
 	public boolean addPermitArea(ContainablePermitArea pa) {
 		
-		
-		
-		//TODO: Check contains in this but not children.
+		for(PermitArea ch : this.getChildren().values())
+			if(ch.intersects(pa) || pa.intersects(ch))
+				return false;
 		
 		return super.addPermitArea(pa);
 	}
@@ -109,7 +115,7 @@ public class LocationPermitArea extends ContainablePermitArea {
 		ConfigurationSection children = cs.createSection("children");
 		
 		for(String s : this.getChildren().keySet())
-			this.getPermitArea(s).saveToConfiguration(children.createSection(s));
+			this.getChildPermitArea(s).saveToConfiguration(children.createSection(s));
 		
 		
 	}

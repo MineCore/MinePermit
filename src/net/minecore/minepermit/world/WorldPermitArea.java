@@ -23,6 +23,11 @@ public class WorldPermitArea extends PermitArea {
 	public boolean contains(Location l) {
 		return l.getWorld().getName().equals(w.getName());
 	}
+	
+	@Override
+	public boolean intersects(PermitArea pa){
+		return pa.getWorld().equals(w);
+	}
 
 	@Override
 	public String getName() {
@@ -45,7 +50,9 @@ public class WorldPermitArea extends PermitArea {
 		if (!pa.getWorld().equals(w))
 			return false;
 
-		// TODO: Check contains in this but not children.
+		for(PermitArea ch : this.getChildren().values())
+			if(ch.intersects(pa) || pa.intersects(ch))
+				return false;
 
 		return super.addPermitArea(pa);
 	}
@@ -106,9 +113,8 @@ public class WorldPermitArea extends PermitArea {
 		cs.set("children", null);
 		ConfigurationSection children = cs.createSection("children");
 		
-		for(String s : this.getChildren().keySet()){
-			this.getPermitArea(s).saveToConfiguration(children.createSection(s));
-		}
+		for(String s : this.getChildren().keySet())
+			this.getChildPermitArea(s).saveToConfiguration(children.createSection(s));
 		
 	}
 

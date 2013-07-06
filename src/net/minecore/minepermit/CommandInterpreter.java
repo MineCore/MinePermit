@@ -1,6 +1,10 @@
 package net.minecore.minepermit;
 
 import java.util.Map;
+
+import net.minecore.minepermit.miner.PermitMiner;
+import net.minecore.minepermit.miner.PermitMinerManager;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -11,8 +15,8 @@ import org.bukkit.entity.Player;
 public class CommandInterpreter implements CommandExecutor {
 
 	private MinePermit mp;
-	private MinerManager mm;
-	public CommandInterpreter(MinePermit mn,MinerManager m)
+	private PermitMinerManager mm;
+	public CommandInterpreter(MinePermit mn,PermitMinerManager m)
 	{
 		mm = m;
 		mp  = mn;
@@ -35,7 +39,7 @@ public class CommandInterpreter implements CommandExecutor {
 
 		} else if (arg3[0].equalsIgnoreCase("time")) {
 
-			Miner m = mm.getMiner(p);
+			PermitMiner m = mm.getMiner(p);
 
 			int id;
 

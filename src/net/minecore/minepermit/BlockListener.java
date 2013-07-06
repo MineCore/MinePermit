@@ -1,5 +1,7 @@
 package net.minecore.minepermit;
 
+import net.minecore.minepermit.miner.PermitMinerManager;
+
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -8,9 +10,9 @@ import org.bukkit.event.block.BlockBreakEvent;
 
 public class BlockListener implements Listener {
 	
-	private MinerManager mm;
+	private PermitMinerManager mm;
 	
-	public BlockListener(MinerManager m){
+	public BlockListener(PermitMinerManager m){
 		mm = m;
 	}
 	

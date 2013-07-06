@@ -4,14 +4,15 @@ import java.io.IOException;
 import java.util.logging.Logger;
 
 import net.minecore.Metrics;
+import net.minecore.MineCore;
+import net.minecore.minepermit.miner.PermitMinerManager;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class MinePermit extends JavaPlugin {
 
-	private MinerManager mm;
-	private Config c;
+	private PermitMinerManager mm;
 	
 	public Logger log;
 	private FileConfiguration conf;
@@ -20,11 +21,9 @@ public class MinePermit extends JavaPlugin {
 	public void onLoad()
 	{
 		log = this.getLogger();
-		mm = new MinerManager(this, c);
+		mm = new PermitMinerManager(this);
 		
 		conf = this.getConfig();
-		
-		
 		
 	}
 
@@ -32,7 +31,7 @@ public class MinePermit extends JavaPlugin {
 	public void onDisable() {
 
 		log.info("Saving players...");
-		mm.savePlayers();
+		mm.savePlayerData();
 		log.info("Players saved!");
 		log.info("MinePermit Disabled");
 
@@ -56,6 +55,10 @@ public class MinePermit extends JavaPlugin {
 
 		log.info("MinePermit Enabled!");
 
+	}
+	
+	public MineCore getMineCore() {
+		return ((MineCore)getServer().getPluginManager().getPlugin("MineCore"));
 	}
 
 }

@@ -1,22 +1,24 @@
-package net.minecore.minepermit;
+package net.minecore.minepermit.miner;
 
 import java.util.Map;
 import java.util.TreeMap;
 
-public class Miner {
+import net.minecore.Miner;
+
+public class PermitMiner {
 	
-	private String player;
+	private Miner miner;
 	private Map<Integer, Long> permits;
 	private long univPermit;
 	
 
-	public Miner(String playerName){
-		this.player = playerName;
+	public PermitMiner(Miner miner){
+		this.miner = miner;
 		permits = new TreeMap<Integer, Long>();
 	}
 	
 	public String getPlayer(){
-		return player;
+		return miner.getPlayerName();
 	}
 	
 	public boolean hasPermit(int blockID){
@@ -61,14 +63,9 @@ public class Miner {
 		}
 		return false;
 	}
-	
-	public String toString(){
-		return player;
-	}
 
 	public void addUniversalPermit(long permitDuration) {
 		univPermit = (System.currentTimeMillis() + (permitDuration +  getRemainingUniversalTime()) * 60000L);
-		
 	}
 
 	public boolean hasUniversalPermit() {
@@ -87,6 +84,11 @@ public class Miner {
 		}
 		
 		return (univPermit - System.currentTimeMillis()) / 60000L;
+	}
+
+	public void save() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

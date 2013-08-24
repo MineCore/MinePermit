@@ -3,7 +3,12 @@ package net.minecore.minepermit.miner;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.bukkit.configuration.ConfigurationSection;
+
 import net.minecore.Miner;
+import net.minecore.minepermit.permits.Permit;
+import net.minecore.minepermit.permits.UniversalPermit;
+import net.minecore.minepermit.world.PermitArea;
 
 public class PermitMiner {
 	
@@ -28,7 +33,11 @@ public class PermitMiner {
 		return false;
 	}
 	
-	public boolean addPermit(int blockID, long minutes){
+	public boolean addPermit(PermitArea pa, Permit p){
+		
+		if(p instanceof UniversalPermit)
+			return addUniversalPermit((UniversalPermit) p);
+		
 		if (permits.containsKey(blockID)){
 			permits.put(blockID, permits.get(blockID) + minutes * 60000L);
 		} else
@@ -64,10 +73,6 @@ public class PermitMiner {
 		return false;
 	}
 
-	public void addUniversalPermit(long permitDuration) {
-		univPermit = (System.currentTimeMillis() + (permitDuration +  getRemainingUniversalTime()) * 60000L);
-	}
-
 	public boolean hasUniversalPermit() {
 		if(univPermit - System.currentTimeMillis() <= 0){
 			univPermit = 0;
@@ -77,17 +82,8 @@ public class PermitMiner {
 		return true;
 	}
 
-	public long getRemainingUniversalTime() {
-		if(univPermit - System.currentTimeMillis() <= 0){
-			univPermit = 0;
-			return 0;
-		}
-		
-		return (univPermit - System.currentTimeMillis()) / 60000L;
-	}
-
 	public void save() {
-		// TODO Auto-generated method stub
+		ConfigurationSection cs = miner.getConfigurationSection("permits");
 		
 	}
 

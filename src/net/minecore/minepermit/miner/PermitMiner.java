@@ -13,13 +13,13 @@ import net.minecore.minepermit.world.PermitArea;
 public class PermitMiner {
 	
 	private Miner miner;
-	private Map<Integer, Long> permits;
-	private long univPermit;
+	private Map<String, PermitHolder> permits;
+	private UniversalPermit up;
 	
 
 	public PermitMiner(Miner miner){
 		this.miner = miner;
-		permits = new TreeMap<Integer, Long>();
+		permits = new TreeMap<String, PermitHolder>();
 	}
 	
 	public String getPlayer(){
@@ -38,14 +38,20 @@ public class PermitMiner {
 		if(p instanceof UniversalPermit)
 			return addUniversalPermit((UniversalPermit) p);
 		
-		if (permits.containsKey(blockID)){
-			permits.put(blockID, permits.get(blockID) + minutes * 60000L);
-		} else
-			permits.put(blockID, System.currentTimeMillis() + minutes * 60000L);
-		return true;
+		PermitHolder ph = permits.get(pa.getStringRepresentation());
+		
+		return ph.addPermit(p);
 		
 	}
 	
+	private boolean addUniversalPermit(UniversalPermit p) {
+		checkUniversalPermit();
+		if(hasUniversalPermit())
+			return false;
+		up = p;
+		return true;
+	}
+
 	public long getRemainingTime(int blockID){
 		if(!hasPermit(blockID))
 			return 0;
@@ -74,12 +80,14 @@ public class PermitMiner {
 	}
 
 	public boolean hasUniversalPermit() {
-		if(univPermit - System.currentTimeMillis() <= 0){
-			univPermit = 0;
-			return false;
-		}
+		checkUniversalPermit();
 		
-		return true;
+		return up != null;
+	}
+	
+	private void checkUniversalPermit(){
+		if(!up.canStillBreakBlocks())
+			up = null;
 	}
 
 	public void save() {

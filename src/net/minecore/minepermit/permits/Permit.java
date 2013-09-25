@@ -26,5 +26,7 @@ public abstract class Permit {
 	}
 	
 	public abstract void save(ConfigurationSection cs);
+
+	public abstract boolean canStillBreakBlocks();
 	
 }

@@ -59,7 +59,7 @@ public class LocationPermitArea extends ContainablePermitArea {
 		
 		return false;
 	}
-
+	
 	@Override
 	public World getWorld() {
 		return l1.getWorld();

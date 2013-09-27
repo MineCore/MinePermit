@@ -26,11 +26,8 @@ public class PermitMiner {
 		return miner.getPlayerName();
 	}
 	
-	public boolean hasPermit(int blockID){
-		if(permits.containsKey(blockID) && checkTime(blockID) || hasUniversalPermit())
-			return true;
-		
-		return false;
+	public boolean hasPermit(PermitArea pa, int blockID){		
+		return getPermit(pa, blockID) != null;
 	}
 	
 	public boolean addPermit(PermitArea pa, Permit p){
@@ -39,6 +36,9 @@ public class PermitMiner {
 			return addUniversalPermit((UniversalPermit) p);
 		
 		PermitHolder ph = permits.get(pa.getStringRepresentation());
+		
+		if(ph == null)
+			permits.put(pa.getStringRepresentation(), ph = new PermitHolder(pa));
 		
 		return ph.addPermit(p);
 		
@@ -51,32 +51,29 @@ public class PermitMiner {
 		up = p;
 		return true;
 	}
-
-	public long getRemainingTime(int blockID){
-		if(!hasPermit(blockID))
-			return 0;
-		return (permits.get(blockID) - System.currentTimeMillis()) / 60000L;
-	}
 	
-	public Map<Integer, Long> getPermits(){
+	public Map<String, PermitHolder> getPermits(){
 		return permits;
 	}
 	
-	public void removePermit(int blockID){
-		permits.remove(blockID);
+	public void removePermit(PermitArea pa, int blockID){
+		PermitHolder ph = permits.get(pa.getStringRepresentation());
+		
+		if(ph != null){
+			
+			ph.removePermit(blockID);
+			
+		}
 	}
 	
-	public boolean checkTime(int id){
-		if(permits.containsKey(id)){
+	public Permit getPermit(PermitArea pa, int blockID){
+		
+		PermitHolder ph = permits.get(pa.getStringRepresentation());
+		
+		if(ph == null)
+			return null;
 			
-			if(permits.get(id) - System.currentTimeMillis() <= 0){
-				removePermit(id);
-				return false;
-			}
-			
-			return true;
-		}
-		return false;
+		return ph.getPermit(blockID);
 	}
 
 	public boolean hasUniversalPermit() {
@@ -92,7 +89,13 @@ public class PermitMiner {
 
 	public void save() {
 		ConfigurationSection cs = miner.getConfigurationSection("permits");
-		
+		for(String key : permits.keySet()){
+			String tmp = key.replace('.', '-');
+			ConfigurationSection child = cs.getConfigurationSection(tmp);
+			if(child == null)
+				child = cs.createSection(tmp);
+			permits.get(key).saveTo(child);
+		}
 	}
 
 }

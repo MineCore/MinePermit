@@ -154,6 +154,8 @@ public abstract class PermitArea {
 		
 		getChildren().put(pa.getName(), pa);
 		
+		pa.setParent(this);
+		
 		return true;
 	}
 	
@@ -188,5 +190,9 @@ public abstract class PermitArea {
 	 * @param cs The ConfigurationSection to save to.
 	 */
 	public abstract void saveToConfiguration(ConfigurationSection cs);
+
+	public String getStringRepresentation() {
+		return name;
+	}
 	
 }

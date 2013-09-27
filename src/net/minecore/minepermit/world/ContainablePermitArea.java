@@ -17,4 +17,12 @@ public abstract class ContainablePermitArea extends PermitArea {
 	public PermitArea getParent(){
 		return parent;
 	}
+	
+	@Override
+	public String getStringRepresentation(){
+		if(parent == null)
+			return getName();
+		
+		return parent.getStringRepresentation() + '.' + getName();
+	}
 }

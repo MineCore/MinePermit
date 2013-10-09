@@ -12,9 +12,11 @@ import org.bukkit.configuration.ConfigurationSection;
 public abstract class Permit {
 	
 	private int blockID;
+	private PermitType type;
 
-	public Permit(int blockID){
+	public Permit(PermitType type, int blockID){
 		this.blockID = blockID;
+		this.type = type;
 	}
 
 	public int getBlockID() {
@@ -23,6 +25,10 @@ public abstract class Permit {
 
 	public void setBlockID(int blockID) {
 		this.blockID = blockID;
+	}
+	
+	public PermitType getPermitType(){
+		return type;
 	}
 	
 	public abstract void save(ConfigurationSection cs);

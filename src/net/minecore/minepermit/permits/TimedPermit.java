@@ -12,14 +12,14 @@ public class TimedPermit extends Permit{
 	 * @param time
 	 */
 	public TimedPermit(int blockID, long time) {
-		super(blockID);
+		super(PermitType.TIMED, blockID);
 		
 		end_time = System.currentTimeMillis() + time * 1000L;
 	}
 	
 	public long getRemainingTime(){
-		long remaining;
-		if((remaining = end_time - System.currentTimeMillis()) <= 0){
+		long remaining = end_time - System.currentTimeMillis();
+		if(remaining <= 0){
 			end_time = 0;
 			return 0;
 		}
@@ -31,6 +31,11 @@ public class TimedPermit extends Permit{
 	public void save(ConfigurationSection cs) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public boolean canStillBreakBlocks() {
+		return getRemainingTime() > 0;
 	}
 
 }

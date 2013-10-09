@@ -9,7 +9,7 @@ public class BlockCountPermit extends Permit {
 	private int count;
 
 	public BlockCountPermit(int blockID, int count) {
-		super(blockID);
+		super(PermitType.COUNTED, blockID);
 		this.count = count;
 		// TODO Auto-generated constructor stub
 	}
@@ -33,15 +33,16 @@ public class BlockCountPermit extends Permit {
 		count--;
 		return true;
 	}
-	
-	public boolean canStillMine(){
-		return count > 0;
-	}
 
 	@Override
 	public void save(ConfigurationSection cs) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public boolean canStillBreakBlocks() {
+		return count > 0;
 	}
 
 }

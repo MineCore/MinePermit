@@ -60,7 +60,7 @@ public class PermitHolder {
 			cs.set(path, null);
 		
 		for(Permit p : permits.values()){
-			//TODO:
+			p.save(cs.createSection("" + p.getBlockID()));
 		}
 			
 	}

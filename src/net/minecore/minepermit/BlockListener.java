@@ -21,8 +21,7 @@ public class BlockListener implements Listener {
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent e){
 		
-		if(!Config.isPermitRequired(e.getBlock().getTypeId()))
-			return;
+		
 		
 		Player p = e.getPlayer();
 		

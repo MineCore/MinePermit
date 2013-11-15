@@ -20,7 +20,7 @@ public class MinePermit extends JavaPlugin {
 	@Override
 	public void onLoad()
 	{
-		log = this.getLogger();
+		log = getLogger();
 		mm = new PermitMinerManager(this);
 		
 		conf = this.getConfig();
@@ -58,7 +58,7 @@ public class MinePermit extends JavaPlugin {
 	}
 	
 	public MineCore getMineCore() {
-		return ((MineCore)getServer().getPluginManager().getPlugin("MineCore"));
+		return (MineCore)getServer().getPluginManager().getPlugin("MineCore");
 	}
 
 }

@@ -34,9 +34,10 @@ public class PermitMinerManager {
 	
 	private PermitMiner loadMiner(String playerName) {
 		
-		miners.put(playerName, new PermitMiner(mp.getMineCore().getMiner(playerName)));
+		PermitMiner pm = new PermitMiner(mp.getMineCore().getMiner(playerName));
+		miners.put(playerName, pm);
 		
-		return getMiner(playerName);
+		return pm;
 	}
 	
 	public void savePlayerData() {

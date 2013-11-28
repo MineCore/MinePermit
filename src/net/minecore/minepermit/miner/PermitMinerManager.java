@@ -18,7 +18,7 @@ public class PermitMinerManager {
 		miners = new TreeMap<String, PermitMiner>();
 	}
 
-	public PermitMiner getMiner(String playerName) {
+	public PermitMiner getPermitMiner(String playerName) {
 
 		PermitMiner m = miners.get(playerName);
 
@@ -28,8 +28,8 @@ public class PermitMinerManager {
 		return m;
 	}
 	
-	public PermitMiner getMiner(Player p) {
-		return getMiner(p.getName());
+	public PermitMiner getPermitMiner(Player p) {
+		return getPermitMiner(p.getName());
 	}
 	
 	private PermitMiner loadMiner(String playerName) {

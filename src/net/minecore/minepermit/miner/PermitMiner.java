@@ -14,7 +14,6 @@ public class PermitMiner {
 	
 	private Miner miner;
 	private Map<String, PermitHolder> permits;
-	private UniversalPermit up;
 	
 
 	public PermitMiner(Miner miner){
@@ -33,58 +32,35 @@ public class PermitMiner {
 	public boolean addPermit(PermitArea pa, Permit p){
 		
 		if(p instanceof UniversalPermit)
-			return addUniversalPermit((UniversalPermit) p);
+			return addUniversalPermit(pa, (UniversalPermit) p);
 		
-		PermitHolder ph = permits.get(pa.getStringRepresentation());
-		
-		if(ph == null)
-			permits.put(pa.getStringRepresentation(), ph = new PermitHolder(pa));
-		
-		return ph.addPermit(p);
+		return getPermitHolder(pa).addPermit(p);
 		
 	}
 	
-	private boolean addUniversalPermit(UniversalPermit p) {
-		checkUniversalPermit();
-		if(hasUniversalPermit())
-			return false;
-		up = p;
-		return true;
+	private boolean addUniversalPermit(PermitArea pa, UniversalPermit p) {
+		return getPermitHolder(pa).addUniversalPermit(p);
 	}
 	
 	public Map<String, PermitHolder> getPermits(){
 		return permits;
 	}
 	
-	public void removePermit(PermitArea pa, int blockID){
-		PermitHolder ph = permits.get(pa.getStringRepresentation());
-		
-		if(ph != null){
-			
-			ph.removePermit(blockID);
-			
-		}
+	public boolean removePermit(PermitArea pa, int blockID){
+		return getPermitHolder(pa).removePermit(blockID);
 	}
 	
 	public Permit getPermit(PermitArea pa, int blockID){
-		
+		return getPermitHolder(pa).getPermit(blockID);
+	}
+	
+	public PermitHolder getPermitHolder(PermitArea pa){
 		PermitHolder ph = permits.get(pa.getStringRepresentation());
 		
 		if(ph == null)
-			return null;
-			
-		return ph.getPermit(blockID);
-	}
-
-	public boolean hasUniversalPermit() {
-		checkUniversalPermit();
+			permits.put(pa.getStringRepresentation(), ph = new PermitHolder(pa));
 		
-		return up != null;
-	}
-	
-	private void checkUniversalPermit(){
-		if(!up.canStillBreakBlocks())
-			up = null;
+		return ph;
 	}
 
 	public void save() {

@@ -2,16 +2,16 @@ package net.minecore.minepermit.permits;
 
 import java.security.InvalidParameterException;
 
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 
 public class BlockCountPermit extends Permit {
 
 	private int count;
 
-	public BlockCountPermit(int blockID, int count) {
-		super(PermitType.COUNTED, blockID);
+	public BlockCountPermit(Material m, int count) {
+		super(PermitType.COUNTED, m);
 		this.count = count;
-		// TODO Auto-generated constructor stub
 	}
 	
 	public void setRemainingBlocks(int count){

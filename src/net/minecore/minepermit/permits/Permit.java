@@ -3,6 +3,7 @@
  */
 package net.minecore.minepermit.permits;
 
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 
 /**
@@ -11,20 +12,20 @@ import org.bukkit.configuration.ConfigurationSection;
  */
 public abstract class Permit {
 	
-	private int blockID;
 	private PermitType type;
+	private Material material;
 
-	public Permit(PermitType type, int blockID){
-		this.blockID = blockID;
+	public Permit(PermitType type, Material m){
+		this.material = m;
 		this.type = type;
 	}
 
-	public int getBlockID() {
-		return blockID;
+	public Material getBlock() {
+		return material;
 	}
 
-	public void setBlockID(int blockID) {
-		this.blockID = blockID;
+	public void setBlock(Material m) {
+		this.material = m;
 	}
 	
 	public PermitType getPermitType(){

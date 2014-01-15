@@ -1,5 +1,6 @@
 package net.minecore.minepermit.permits;
 
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 
 public class TimedPermit extends Permit{
@@ -11,8 +12,8 @@ public class TimedPermit extends Permit{
 	 * @param blockID
 	 * @param time
 	 */
-	public TimedPermit(int blockID, long time) {
-		super(PermitType.TIMED, blockID);
+	public TimedPermit(Material m, long time) {
+		super(PermitType.TIMED, m);
 		
 		end_time = System.currentTimeMillis() + time * 1000L;
 	}

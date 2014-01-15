@@ -3,6 +3,7 @@ package net.minecore.minepermit.miner;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 
 import net.minecore.Miner;
@@ -25,8 +26,8 @@ public class PermitMiner {
 		return miner.getPlayerName();
 	}
 	
-	public boolean hasPermit(PermitArea pa, int blockID){		
-		return getPermit(pa, blockID) != null;
+	public boolean hasPermit(PermitArea pa, Material m){		
+		return getPermit(pa, m) != null;
 	}
 	
 	public boolean addPermit(PermitArea pa, Permit p){
@@ -46,12 +47,12 @@ public class PermitMiner {
 		return permits;
 	}
 	
-	public boolean removePermit(PermitArea pa, int blockID){
-		return getPermitHolder(pa).removePermit(blockID);
+	public boolean removePermit(PermitArea pa, Material m){
+		return getPermitHolder(pa).removePermit(m);
 	}
 	
-	public Permit getPermit(PermitArea pa, int blockID){
-		return getPermitHolder(pa).getPermit(blockID);
+	public Permit getPermit(PermitArea pa, Material m){
+		return getPermitHolder(pa).getPermit(m);
 	}
 	
 	public PermitHolder getPermitHolder(PermitArea pa){

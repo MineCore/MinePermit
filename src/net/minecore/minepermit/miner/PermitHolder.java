@@ -3,90 +3,98 @@ package net.minecore.minepermit.miner;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.bukkit.configuration.ConfigurationSection;
-
 import net.minecore.minepermit.permits.Permit;
 import net.minecore.minepermit.permits.UniversalPermit;
 import net.minecore.minepermit.world.PermitArea;
 
+import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
+
 public class PermitHolder {
-	
-	private Map<Integer, Permit> permits;
-	private PermitArea pa;
+
+	private final Map<Material, Permit> permits;
+	private final PermitArea pa;
 	private UniversalPermit up;
 
 	public PermitHolder(PermitArea pa) {
 		this.pa = pa;
-		permits = new TreeMap<Integer, Permit>();
+		permits = new TreeMap<Material, Permit>();
 	}
 
 	public boolean hasUniversalPermit() {
 		checkUniversalPermit();
-		
+
 		return up != null;
 	}
-	
-	private void checkUniversalPermit(){
-		if(!up.canStillBreakBlocks())
+
+	private void checkUniversalPermit() {
+		if (!up.canStillBreakBlocks())
 			up = null;
 	}
-	
-	public boolean addPermit(Permit p){
-		
-		refreshPermit(p.getBlockID());
-		
-		if(permits.containsKey(p.getBlockID()))
+
+	public boolean addPermit(Permit p) {
+
+		refreshPermit(p.getBlock());
+
+		if (permits.containsKey(p.getBlock()))
 			return false;
-		
-		permits.put(p.getBlockID(), p);
-		
+
+		permits.put(p.getBlock(), p);
+
 		return true;
 	}
 
-	private void refreshPermit(int blockID) {
-		Permit p = permits.get(blockID);
-		if(p == null)
+	private void refreshPermit(Material material) {
+		Permit p = permits.get(material);
+		if (p == null)
 			return;
-		
-		if(!p.canStillBreakBlocks())
-			permits.remove(blockID);
-		
+
+		if (!p.canStillBreakBlocks())
+			permits.remove(material);
+
 	}
 
-	public boolean hasPermit(int id) {
-		refreshPermit(id);
-		return permits.containsKey(id);
+	public boolean hasPermit(Material m) {
+		refreshPermit(m);
+		return permits.containsKey(m);
 	}
 
-	public boolean removePermit(int blockID) {
-		if(hasPermit(blockID)){
-			permits.remove(blockID);
-			return true;
-		}
-		return false;
+	public boolean removePermit(Material m) {
+		return permits.remove(m) != null;
 	}
 
-	public Permit getPermit(int blockID) {
-		refreshPermit(blockID);
-		return permits.get(blockID);
+	public Permit getPermit(Material m) {
+		refreshPermit(m);
+		return permits.get(m);
 	}
 
 	public void saveTo(ConfigurationSection cs) {
-		for(String path : cs.getKeys(false))
+		for (String path : cs.getKeys(false))
 			cs.set(path, null);
-		
-		for(Permit p : permits.values()){
-			p.save(cs.createSection("" + p.getBlockID()));
+
+		for (Permit p : permits.values()) {
+			p.save(cs.createSection(p.getBlock().name()));
 		}
-			
+
 	}
 
 	public boolean addUniversalPermit(UniversalPermit p) {
 		checkUniversalPermit();
-		if(hasUniversalPermit())
+		if (hasUniversalPermit())
 			return false;
 		up = p;
 		return true;
+	}
+
+	/**
+	 * @return the pa
+	 */
+	public PermitArea getPermitArea() {
+		return pa;
+	}
+
+	public UniversalPermit getUniversalPermit() {
+		return up;
 	}
 
 }

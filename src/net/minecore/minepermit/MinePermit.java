@@ -14,21 +14,20 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class MinePermit extends JavaPlugin {
 
 	private PermitMinerManager mm;
-	
+
 	public Logger log;
 	private FileConfiguration conf;
 
 	private WorldPermitAreaManager am;
-	
+
 	@Override
-	public void onLoad()
-	{
+	public void onLoad() {
 		log = getLogger();
 		mm = new PermitMinerManager(this);
 		am = new WorldPermitAreaManager(this);
-		
+
 		conf = this.getConfig();
-		
+
 	}
 
 	@Override
@@ -44,12 +43,12 @@ public class MinePermit extends JavaPlugin {
 	@Override
 	public void onEnable() {
 
-		//Register the blockListener
-		this.getServer().getPluginManager().registerEvents(new BlockListener(mm, am), this);
-		
-		//Set the command executer
-		getCommand("permit").setExecutor(new CommandInterpreter(this,mm));
-		
+		// Register the blockListener
+		this.getServer().getPluginManager().registerEvents(new BlockListener(this), this);
+
+		// Set the command executer
+		getCommand("permit").setExecutor(new CommandInterpreter(this, mm));
+
 		try {
 			Metrics metrics = new Metrics(this);
 			metrics.start();
@@ -60,9 +59,17 @@ public class MinePermit extends JavaPlugin {
 		log.info("MinePermit Enabled!");
 
 	}
-	
+
 	public MineCore getMineCore() {
-		return (MineCore)getServer().getPluginManager().getPlugin("MineCore");
+		return (MineCore) getServer().getPluginManager().getPlugin("MineCore");
+	}
+
+	public WorldPermitAreaManager getWorldPermitAreaManager() {
+		return am;
+	}
+
+	public PermitMinerManager getPermitMinerManager() {
+		return mm;
 	}
 
 }

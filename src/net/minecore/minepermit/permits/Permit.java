@@ -20,7 +20,7 @@ public abstract class Permit {
 		this.type = type;
 	}
 
-	public Material getBlock() {
+	public Material getMaterial() {
 		return material;
 	}
 

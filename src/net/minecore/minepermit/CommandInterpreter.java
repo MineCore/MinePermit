@@ -1,14 +1,17 @@
 package net.minecore.minepermit;
 
 import java.util.Map;
+import java.util.logging.Logger;
 
 import net.minecore.minepermit.miner.PermitHolder;
 import net.minecore.minepermit.miner.PermitMiner;
 import net.minecore.minepermit.miner.PermitMinerManager;
+import net.minecore.minepermit.permits.Permit;
 import net.minecore.minepermit.permits.UniversalPermit;
+import net.minecore.minepermit.world.PermitArea;
+import net.minecore.minepermit.world.WorldPermitAreaManager;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -19,12 +22,14 @@ import sun.security.krb5.Config;
 
 public class CommandInterpreter implements CommandExecutor {
 
-	private final MinePermit mp;
 	private final PermitMinerManager mm;
+	private final WorldPermitAreaManager areaManager;
+	private final Logger log;
 
-	public CommandInterpreter(MinePermit mn, PermitMinerManager m) {
-		mm = m;
-		mp = mn;
+	public CommandInterpreter(MinePermit mp) {
+		areaManager = mp.getWorldPermitAreaManager();
+		mm = mp.getPermitMinerManager();
+		log = mp.log;
 	}
 
 	@Override
@@ -32,62 +37,56 @@ public class CommandInterpreter implements CommandExecutor {
 
 		// Console can't send commands
 		if (sender instanceof ConsoleCommandSender) {
-			mp.log.info("Sorry, commands cant be sent from console yet.");
+			log.info("Sorry, commands cant be sent from console yet.");
 			return true;
 		}
 
-		Player p = (Player) sender;
+		Player player = (Player) sender;
 
 		// Make sure there is a secondary parameter
 		if (arg3.length == 0) {
 			return false;
 
-		} else if (arg3[0].equalsIgnoreCase("time")) {
+		} else if (arg3[0].equalsIgnoreCase("remaining")) {
 
-			PermitMiner pm = mm.getPermitMiner(p);
+			PermitMiner pm = mm.getPermitMiner(player);
 
-			Material m;
+			Map<String, PermitHolder> permits = pm.getPermits();
 
 			if (arg3.length < 2) {
 
-				Map<String, PermitHolder> permits = pm.getPermits();
-
 				for (String paString : permits.keySet()) {
 
-					p.sendMessage("Permits in PermitArea " + paString);
+					player.sendMessage("Permits in PermitArea " + paString);
 
 					PermitHolder ph = permits.get(paString);
 
-					UniversalPermit up = ph.getUniversalPermit();
+					printPermitHolder(ph, player);
 
-					if (up != null) {
-						p.sendMessage(ChatColor.DARK_GREEN + "You have "
-								+ pm.getRemainingUniversalTime()
-								+ " minutes left on the Universal Permit.");
-						return true;
+				}
+			} else {
+
+				String local = arg3[1];
+
+				if (local.equalsIgnoreCase("here")) {
+
+					PermitArea pa = areaManager.getRelevantPermitArea(player.getLocation());
+					PermitHolder ph = permits.get(pa.getStringRepresentation());
+
+					printPermitHolder(ph, player);
+
+				} else if (local.equalsIgnoreCase("world")) {
+
+					for (String paString : permits.keySet()) {
+						if (paString.substring(0, paString.indexOf('.')).equals(
+								player.getLocation().getWorld().getName()))
+							printPermitHolder(permits.get(paString), player);
 					}
 
+				} else {
+					printPermitHolder(permits.get(arg3[1]), player);
 				}
 
-				if (tmp.isEmpty()) {
-					p.sendMessage("" + ChatColor.YELLOW + "You don't own any permits!");
-					return true;
-				}
-
-				for (int y = 0; y < tmp.size(); y++) {
-
-					p.sendMessage(ChatColor.DARK_GREEN + "" + n + ": " + pm.getRemainingTime(n)
-							+ " minutes.");
-				}
-
-				return true;
-			}
-
-			if (!pm.hasPermit(id)) {
-				p.sendMessage(ChatColor.DARK_RED + "You do not own a permit for " + id);
-			} else {
-				p.sendMessage(ChatColor.DARK_GREEN + "You have " + pm.getRemainingTime(id)
-						+ " minutes left.");
 			}
 
 			return true;
@@ -101,7 +100,7 @@ public class CommandInterpreter implements CommandExecutor {
 			} catch (ArrayIndexOutOfBoundsException e1) {
 
 				// If there is no number, change to Universal system
-				p.sendMessage(ChatColor.AQUA
+				player.sendMessage(ChatColor.AQUA
 						+ "The cost for the Universal permit for this world is "
 						+ Config.universalCost);
 				return true;
@@ -110,11 +109,11 @@ public class CommandInterpreter implements CommandExecutor {
 			}
 
 			if (!Config.isPermitRequired(id)) {
-				p.sendMessage("" + ChatColor.GRAY + "A permit is not required for this item.");
+				player.sendMessage("" + ChatColor.GRAY + "A permit is not required for this item.");
 				return true;
 			}
 
-			p.sendMessage(ChatColor.AQUA + "The cost for this item is " + Config.getCost(id)
+			player.sendMessage(ChatColor.AQUA + "The cost for this item is " + Config.getCost(id)
 					+ " dollars");
 			return true;
 
@@ -133,44 +132,45 @@ public class CommandInterpreter implements CommandExecutor {
 					return false;
 
 				// Check if the player already has the Universal permit
-				if (!Config.multiPermit && mm.getPermitMiner(p).hasUniversalPermit()) {
-					p.sendMessage("" + ChatColor.YELLOW + "You already have a permit for this!");
+				if (!Config.multiPermit && mm.getPermitMiner(player).hasUniversalPermit()) {
+					player.sendMessage("" + ChatColor.YELLOW
+							+ "You already have a permit for this!");
 					return true;
 				}
 
 				// Charge player if possible
-				if (!PlayerManager.charge(p, Config.universalCost)) {
-					p.sendMessage("" + ChatColor.DARK_RED + "You dont have enough money!");
+				if (!PlayerManager.charge(player, Config.universalCost)) {
+					player.sendMessage("" + ChatColor.DARK_RED + "You dont have enough money!");
 					return true;
 				}
 
-				mm.getPermitMiner(p).addUniversalPermit(Config.permitDuration);
+				mm.getPermitMiner(player).addUniversalPermit(Config.permitDuration);
 
-				p.sendMessage("" + ChatColor.DARK_GREEN + "Permit purchased!");
+				player.sendMessage("" + ChatColor.DARK_GREEN + "Permit purchased!");
 				return true;
 			}
 
 			// Check if a permit is required for this block
 			if (!Config.isPermitRequired(id)) {
-				p.sendMessage("" + ChatColor.GRAY + "A permit is not required for this item.");
+				player.sendMessage("" + ChatColor.GRAY + "A permit is not required for this item.");
 				return true;
 			}
 
 			// Check if the player already has a permit for this
-			if (!Config.multiPermit && mm.getPermitMiner(p).hasPermit(id)) {
-				p.sendMessage("" + ChatColor.YELLOW + "You already have a permit for this!");
+			if (!Config.multiPermit && mm.getPermitMiner(player).hasPermit(id)) {
+				player.sendMessage("" + ChatColor.YELLOW + "You already have a permit for this!");
 				return true;
 			}
 
 			// Charge player if possible
-			if (!PlayerManager.charge(p, Config.getCost(id))) {
-				p.sendMessage("" + ChatColor.DARK_RED + "You dont have enough money!");
+			if (!PlayerManager.charge(player, Config.getCost(id))) {
+				player.sendMessage("" + ChatColor.DARK_RED + "You dont have enough money!");
 				return true;
 			}
 
-			mm.getPermitMiner(p).addPermit(id, Config.permitDuration);
+			mm.getPermitMiner(player).addPermit(id, Config.permitDuration);
 
-			p.sendMessage("" + ChatColor.DARK_GREEN + "Permit purchased!");
+			player.sendMessage("" + ChatColor.DARK_GREEN + "Permit purchased!");
 
 			return true;
 		} else if (arg3[0].equalsIgnoreCase("view")) {
@@ -188,7 +188,7 @@ public class CommandInterpreter implements CommandExecutor {
 					tmp += i + " ";
 				}
 
-				p.sendMessage(tmp);
+				player.sendMessage(tmp);
 
 				return true;
 			} catch (NumberFormatException e2) {
@@ -196,9 +196,9 @@ public class CommandInterpreter implements CommandExecutor {
 			}
 
 			if (Config.isPermitRequired(id)) {
-				p.sendMessage(ChatColor.DARK_RED + "A permit is required for " + id);
+				player.sendMessage(ChatColor.DARK_RED + "A permit is required for " + id);
 			} else {
-				p.sendMessage(ChatColor.DARK_GREEN + "A permit is not required for " + id);
+				player.sendMessage(ChatColor.DARK_GREEN + "A permit is not required for " + id);
 			}
 
 			return true;
@@ -206,10 +206,29 @@ public class CommandInterpreter implements CommandExecutor {
 		}
 
 		if (arg3[0].equals("wall")) {
-			Wall w = new Wall(p.getLocation());
+			Wall w = new Wall(player.getLocation());
 			return true;
 		}
 
 		return false;
+	}
+
+	private void printPermitHolder(PermitHolder ph, Player player) {
+
+		if (ph == null) {
+			player.sendMessage(ChatColor.RED + "You do not have any Permits for this area!");
+			return;
+		}
+
+		UniversalPermit up = ph.getUniversalPermit();
+
+		if (up != null) {
+			player.sendMessage(ChatColor.DARK_GREEN + up.toString());
+		}
+
+		for (Permit p : ph.getPermits()) {
+			player.sendMessage(ChatColor.AQUA + p.toString());
+		}
+
 	}
 }

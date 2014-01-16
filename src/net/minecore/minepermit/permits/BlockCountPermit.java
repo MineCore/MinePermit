@@ -13,23 +13,23 @@ public class BlockCountPermit extends Permit {
 		super(PermitType.COUNTED, m);
 		this.count = count;
 	}
-	
-	public void setRemainingBlocks(int count){
-		
-		if(count < 0)
+
+	public void setRemainingBlocks(int count) {
+
+		if (count < 0)
 			throw new InvalidParameterException("Count cannot be less than 0!");
-		
+
 		this.count = count;
 	}
-	
-	public int getRemainingBlocks(){
+
+	public int getRemainingBlocks() {
 		return count;
 	}
-	
-	public boolean mineBlock(){
-		if(count == 0)
+
+	public boolean mineBlock() {
+		if (count == 0)
 			return false;
-		
+
 		count--;
 		return true;
 	}
@@ -37,12 +37,17 @@ public class BlockCountPermit extends Permit {
 	@Override
 	public void save(ConfigurationSection cs) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public boolean canStillBreakBlocks() {
 		return count > 0;
+	}
+
+	@Override
+	public String toString() {
+		return "BlockCountPermit with " + count + " blocks remaining";
 	}
 
 }

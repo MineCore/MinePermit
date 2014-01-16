@@ -1,5 +1,6 @@
 package net.minecore.minepermit.miner;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -34,12 +35,12 @@ public class PermitHolder {
 
 	public boolean addPermit(Permit p) {
 
-		refreshPermit(p.getBlock());
+		refreshPermit(p.getMaterial());
 
-		if (permits.containsKey(p.getBlock()))
+		if (permits.containsKey(p.getMaterial()))
 			return false;
 
-		permits.put(p.getBlock(), p);
+		permits.put(p.getMaterial(), p);
 
 		return true;
 	}
@@ -73,7 +74,7 @@ public class PermitHolder {
 			cs.set(path, null);
 
 		for (Permit p : permits.values()) {
-			p.save(cs.createSection(p.getBlock().name()));
+			p.save(cs.createSection(p.getMaterial().name()));
 		}
 
 	}
@@ -95,6 +96,10 @@ public class PermitHolder {
 
 	public UniversalPermit getUniversalPermit() {
 		return up;
+	}
+
+	public Collection<Permit> getPermits() {
+		return permits.values();
 	}
 
 }

@@ -7,11 +7,13 @@ import net.minecore.minepermit.miner.PermitHolder;
 import net.minecore.minepermit.miner.PermitMiner;
 import net.minecore.minepermit.miner.PermitMinerManager;
 import net.minecore.minepermit.permits.Permit;
+import net.minecore.minepermit.permits.PermitType;
 import net.minecore.minepermit.permits.UniversalPermit;
 import net.minecore.minepermit.world.PermitArea;
 import net.minecore.minepermit.world.WorldPermitAreaManager;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -93,28 +95,26 @@ public class CommandInterpreter implements CommandExecutor {
 
 		} else if (arg3[0].equalsIgnoreCase("cost")) {
 
-			int id;
+			PermitArea pa = areaManager.getRelevantPermitArea(player.getLocation());
 
-			try {
-				id = Integer.parseInt(arg3[1]);
-			} catch (ArrayIndexOutOfBoundsException e1) {
+			if (arg3.length < 2) {
 
-				// If there is no number, change to Universal system
-				player.sendMessage(ChatColor.AQUA
-						+ "The cost for the Universal permit for this world is "
-						+ Config.universalCost);
-				return true;
-			} catch (NumberFormatException e2) {
-				return false;
-			}
+				for (PermitType pt : PermitType.values())
+					player.sendMessage(ChatColor.AQUA + "The cost for the Universal " + pt.name()
+							+ "permit for this world is " + pa.getUniversalPermitCost(pt));
 
-			if (!Config.isPermitRequired(id)) {
-				player.sendMessage("" + ChatColor.GRAY + "A permit is not required for this item.");
 				return true;
 			}
 
-			player.sendMessage(ChatColor.AQUA + "The cost for this item is " + Config.getCost(id)
-					+ " dollars");
+			Material m = Material.matchMaterial(arg3[1]);
+
+			if (m == null) {
+				player.sendMessage(ChatColor.RED + "Invalid Material!");
+			} else if (!pa.requiresPermit(m)) {
+				player.sendMessage(ChatColor.GRAY + "A permit is not required for this item.");
+			} else
+				player.sendMessage(ChatColor.AQUA + "The cost for this item is " + pa.getPrice(m));
+
 			return true;
 
 		} else if (arg3[0].equalsIgnoreCase("buy")) {

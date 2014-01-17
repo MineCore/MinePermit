@@ -235,4 +235,9 @@ public abstract class PermitArea {
 
 	public abstract int getUniversalPermitCost(PermitType counted);
 
+	public double getUniversalPrice(PermitType type) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
 }

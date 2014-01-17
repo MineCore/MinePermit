@@ -47,7 +47,7 @@ public class MinePermit extends JavaPlugin {
 		this.getServer().getPluginManager().registerEvents(new BlockListener(this), this);
 
 		// Set the command executer
-		getCommand("permit").setExecutor(new CommandInterpreter(this, mm));
+		getCommand("permit").setExecutor(new CommandInterpreter(this));
 
 		try {
 			Metrics metrics = new Metrics(this);

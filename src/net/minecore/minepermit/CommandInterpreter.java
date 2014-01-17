@@ -3,12 +3,17 @@ package net.minecore.minepermit;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import net.minecore.EconomyManager;
 import net.minecore.minepermit.miner.PermitHolder;
 import net.minecore.minepermit.miner.PermitMiner;
 import net.minecore.minepermit.miner.PermitMinerManager;
+import net.minecore.minepermit.permits.BlockCountPermit;
 import net.minecore.minepermit.permits.Permit;
 import net.minecore.minepermit.permits.PermitType;
+import net.minecore.minepermit.permits.TimedPermit;
+import net.minecore.minepermit.permits.UniversalBlockCountPermit;
 import net.minecore.minepermit.permits.UniversalPermit;
+import net.minecore.minepermit.permits.UniversalTimedPermit;
 import net.minecore.minepermit.world.PermitArea;
 import net.minecore.minepermit.world.WorldPermitAreaManager;
 
@@ -27,11 +32,13 @@ public class CommandInterpreter implements CommandExecutor {
 	private final PermitMinerManager mm;
 	private final WorldPermitAreaManager areaManager;
 	private final Logger log;
+	private final EconomyManager econManager;
 
 	public CommandInterpreter(MinePermit mp) {
 		areaManager = mp.getWorldPermitAreaManager();
 		mm = mp.getPermitMinerManager();
 		log = mp.log;
+		econManager = mp.getMineCore().getEconomyManager();
 	}
 
 	@Override
@@ -44,14 +51,14 @@ public class CommandInterpreter implements CommandExecutor {
 		}
 
 		Player player = (Player) sender;
+		PermitMiner pm = mm.getPermitMiner(player);
+		PermitArea pa = areaManager.getRelevantPermitArea(player.getLocation());
 
 		// Make sure there is a secondary parameter
 		if (arg3.length == 0) {
 			return false;
 
 		} else if (arg3[0].equalsIgnoreCase("remaining")) {
-
-			PermitMiner pm = mm.getPermitMiner(player);
 
 			Map<String, PermitHolder> permits = pm.getPermits();
 
@@ -72,7 +79,6 @@ public class CommandInterpreter implements CommandExecutor {
 
 				if (local.equalsIgnoreCase("here")) {
 
-					PermitArea pa = areaManager.getRelevantPermitArea(player.getLocation());
 					PermitHolder ph = permits.get(pa.getStringRepresentation());
 
 					printPermitHolder(ph, player);
@@ -94,8 +100,6 @@ public class CommandInterpreter implements CommandExecutor {
 			return true;
 
 		} else if (arg3[0].equalsIgnoreCase("cost")) {
-
-			PermitArea pa = areaManager.getRelevantPermitArea(player.getLocation());
 
 			if (arg3.length < 2) {
 
@@ -119,58 +123,81 @@ public class CommandInterpreter implements CommandExecutor {
 
 		} else if (arg3[0].equalsIgnoreCase("buy")) {
 
-			int id;
-
-			// Atempt to get an id number for the block
-			try {
-				id = Integer.parseInt(arg3[1]);
-			} catch (ArrayIndexOutOfBoundsException e1) {
+			if (arg3.length < 3)
 				return false;
-			} catch (NumberFormatException e) {
 
-				if (!arg3[1].equalsIgnoreCase("universal"))
-					return false;
+			PermitType type;
 
+			if (arg3[2].equalsIgnoreCase("counted"))
+				type = PermitType.COUNTED;
+			else if (arg3[2].equalsIgnoreCase("timed"))
+				type = PermitType.TIMED;
+
+			if (arg3[1].equalsIgnoreCase("universal")) {
 				// Check if the player already has the Universal permit
-				if (!Config.multiPermit && mm.getPermitMiner(player).hasUniversalPermit()) {
+				if (pm.getPermitHolder(pa).hasUniversalPermit()) {
 					player.sendMessage("" + ChatColor.YELLOW
-							+ "You already have a permit for this!");
+							+ "You already have a Universal Permit for here!");
 					return true;
 				}
 
 				// Charge player if possible
-				if (!PlayerManager.charge(player, Config.universalCost)) {
-					player.sendMessage("" + ChatColor.DARK_RED + "You dont have enough money!");
+				if (!econManager.charge(player, pa.getUniversalPrice(type))) {
+					player.sendMessage(ChatColor.DARK_RED + "You dont have enough money!");
 					return true;
 				}
 
-				mm.getPermitMiner(player).addUniversalPermit(Config.permitDuration);
+				UniversalPermit upermit;
 
-				player.sendMessage("" + ChatColor.DARK_GREEN + "Permit purchased!");
+				switch (type) {
+				case COUNTED:
+					upermit = new UniversalBlockCountPermit(200); // TODO:
+					break;
+				case TIMED:
+					upermit = new UniversalTimedPermit(60000);// TODO:
+				}
+
+				pm.getPermitHolder(pa).addUniversalPermit(upermit);
+
+				player.sendMessage(ChatColor.DARK_GREEN + "Permit purchased!");
+				return true;
+			}
+
+			Material m = Material.matchMaterial(arg3[1]);
+
+			if (m == null) {
+				player.sendMessage(ChatColor.RED + "Invalid Material!");
 				return true;
 			}
 
 			// Check if a permit is required for this block
-			if (!Config.isPermitRequired(id)) {
+			if (!pa.requiresPermit(m)) {
 				player.sendMessage("" + ChatColor.GRAY + "A permit is not required for this item.");
 				return true;
 			}
 
 			// Check if the player already has a permit for this
-			if (!Config.multiPermit && mm.getPermitMiner(player).hasPermit(id)) {
+			if (pm.hasPermit(pa, m)) {
 				player.sendMessage("" + ChatColor.YELLOW + "You already have a permit for this!");
 				return true;
 			}
 
 			// Charge player if possible
-			if (!PlayerManager.charge(player, Config.getCost(id))) {
+			if (!econManager.charge(player, pa.getPrice(m))) {
 				player.sendMessage("" + ChatColor.DARK_RED + "You dont have enough money!");
 				return true;
 			}
 
-			mm.getPermitMiner(player).addPermit(id, Config.permitDuration);
+			Permit permit;
 
-			player.sendMessage("" + ChatColor.DARK_GREEN + "Permit purchased!");
+			if (type.equalsIgnoreCase("timed"))
+				permit = new TimedPermit(m, 60000);
+			else if (type.equalsIgnoreCase("counted"))
+				permit = new BlockCountPermit(m, 20);
+
+			pm.addPermit(pa, permit);
+
+			player.sendMessage(ChatColor.DARK_GREEN + "Permit purchased!");
 
 			return true;
 		} else if (arg3[0].equalsIgnoreCase("view")) {

@@ -2,9 +2,8 @@ main: net.minecore.minepermit.MinePermit
 author: Numenorean95
 authors: [tcoan98]
 name: MinePermit
-version: 1.1
+version: 2.0
 depend:  [MineCore]
-softdepend: [Vault]
 
 commands:
     permit:
@@ -12,15 +11,15 @@ commands:
         aliases: p
         usage: |
             /<command> - List of commands
-            /<command> buy [id/"universal"] - Buys permit
-            /<command> cost [id] - Display cost of certain permit. No param displays price for universal permit
+            /<command> remaining ["here"|"world"|material_name] - Shows remaining time or blocks for the specified permits
+            /<command> buy <material_name/"universal"> <"timed"|"counted"> - Buys permit
+            /<command> cost [material name] - Display cost of certain permit. No param displays price for universal permit
             /<command> time {id} - Displays remaining time for permit. No param displays all owned permits
             /<command> view {id} - Returns if a permit is required for this block. No param returns all required permits
-            /<command> wall
 
 permissions:
     MinePermit.buy
-        description: Required to use all commands having tto do with permits
+        description: Required to use all commands having to do with permits
         default: true
     MinePermit.exempt:
         description: Exempts player from mining permit requirements

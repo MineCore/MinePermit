@@ -25,8 +25,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
-import sun.security.krb5.Config;
-
 public class CommandInterpreter implements CommandExecutor {
 
 	private final PermitMinerManager mm;
@@ -126,7 +124,7 @@ public class CommandInterpreter implements CommandExecutor {
 			if (arg3.length < 3)
 				return false;
 
-			PermitType type;
+			PermitType type = null;
 
 			if (arg3[2].equalsIgnoreCase("counted"))
 				type = PermitType.COUNTED;
@@ -155,6 +153,9 @@ public class CommandInterpreter implements CommandExecutor {
 					break;
 				case TIMED:
 					upermit = new UniversalTimedPermit(60000);// TODO:
+					break;
+				default:
+					return false;
 				}
 
 				pm.getPermitHolder(pa).addUniversalPermit(upermit);
@@ -188,12 +189,23 @@ public class CommandInterpreter implements CommandExecutor {
 				return true;
 			}
 
-			Permit permit;
+			Permit permit = null;
 
-			if (type.equalsIgnoreCase("timed"))
+			if (type.equals(PermitType.TIMED))
 				permit = new TimedPermit(m, 60000);
-			else if (type.equalsIgnoreCase("counted"))
+			else if (type.equals(PermitType.COUNTED))
 				permit = new BlockCountPermit(m, 20);
+
+			switch (type) {
+			case COUNTED:
+				permit = new TimedPermit(m, 60000); // TODO:
+				break;
+			case TIMED:
+				permit = new BlockCountPermit(m, 20);// TODO:
+				break;
+			default:
+				return false;
+			}
 
 			pm.addPermit(pa, permit);
 
@@ -202,38 +214,27 @@ public class CommandInterpreter implements CommandExecutor {
 			return true;
 		} else if (arg3[0].equalsIgnoreCase("view")) {
 
-			int id;
+			if (arg3.length < 2) {
 
-			try {
-				id = Integer.parseInt(arg3[1]);
-			} catch (IndexOutOfBoundsException e) {
+				String tmp = ChatColor.BLUE + "Permits are required for: ";
 
-				Map<Integer, Integer> perms = Config.getPermits();
-				String tmp = ChatColor.DARK_PURPLE + "Permits are required for: ";
+				for (Material m : pa.getPrices().getPrices().keySet()) {
 
-				for (Integer i : perms.keySet()) {
-					tmp += i + " ";
+					tmp += ChatColor.AQUA + m.name() + ChatColor.WHITE + ", ";
+
 				}
 
-				player.sendMessage(tmp);
-
 				return true;
-			} catch (NumberFormatException e2) {
-				return false;
 			}
 
-			if (Config.isPermitRequired(id)) {
-				player.sendMessage(ChatColor.DARK_RED + "A permit is required for " + id);
+			Material m = Material.matchMaterial(arg3[1]);
+
+			if (pa.requiresPermit(m)) {
+				player.sendMessage(ChatColor.RED + "A permit is required for " + m);
 			} else {
-				player.sendMessage(ChatColor.DARK_GREEN + "A permit is not required for " + id);
+				player.sendMessage(ChatColor.GREEN + "A permit is not required for " + m);
 			}
 
-			return true;
-
-		}
-
-		if (arg3[0].equals("wall")) {
-			Wall w = new Wall(player.getLocation());
 			return true;
 		}
 

@@ -37,4 +37,9 @@ public class InertPriceList implements PriceList {
 		prices.put(m, cost);
 	}
 
+	public static PriceList loadFromConfigurationSection(ConfigurationSection configurationSection) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

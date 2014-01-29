@@ -32,20 +32,16 @@ public class BlockListener implements Listener {
 
 		PermitArea pa = am.getRelevantPermitArea(e.getBlock().getLocation());
 		if (pa.getEffectiveDepth() < e.getBlock().getY()
-				|| !pa.requiresPermit(e.getBlock().getTypeId()))
+				|| !pa.requiresPermit(e.getBlock().getType()))
 			return;
 
 		PermitMiner pm = mm.getPermitMiner(p);
-		Permit permit = pm.getPermit(pa, e.getBlock().getTypeId());
+		Permit permit = pm.getPermit(pa, e.getBlock().getType());
 
 		if (permit == null) {
 			e.setCancelled(true);
 			p.sendMessage(ChatColor.DARK_RED
-					+ "You may not mine these blocks! Use /permit buy <id> to buy a permit." + "");
-		} else if (!permit.canStillBreakBlocks()) {
-			e.setCancelled(true);
-			p.sendMessage(ChatColor.DARK_RED
-					+ "Your permit has run out! Use /permit buy <id> to buy a permit");
+					+ "You may not mine these blocks! Use /permit buy <name> to buy a permit.");
 		}
 
 	}

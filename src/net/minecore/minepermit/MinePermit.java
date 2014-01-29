@@ -24,9 +24,9 @@ public class MinePermit extends JavaPlugin {
 	public void onLoad() {
 		log = getLogger();
 		mm = new PermitMinerManager(this);
-		am = new WorldPermitAreaManager(this);
-
 		conf = this.getConfig();
+		am = WorldPermitAreaManager.loadFromConfigurationSection(conf
+				.getConfigurationSection("WorldPermitAreas"));
 
 	}
 

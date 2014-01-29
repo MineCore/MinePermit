@@ -47,10 +47,8 @@ public class PermitHolder {
 
 	private void refreshPermit(Material material) {
 		Permit p = permits.get(material);
-		if (p == null)
-			return;
 
-		if (!p.canStillBreakBlocks())
+		if (p != null && !p.canStillBreakBlocks())
 			permits.remove(material);
 
 	}

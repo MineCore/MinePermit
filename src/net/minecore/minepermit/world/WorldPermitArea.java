@@ -11,7 +11,6 @@ import org.bukkit.configuration.InvalidConfigurationException;
 public class WorldPermitArea extends PermitArea {
 
 	private final World w;
-	private boolean allowMiningUnspecifiedBlocks;
 
 	public WorldPermitArea(World w, PriceList pl) {
 
@@ -61,7 +60,7 @@ public class WorldPermitArea extends PermitArea {
 
 				if (pa.contains(ch)) {
 					pa.addPermitArea(ch);
-					this.removeChildPermitArea(ch.getName());
+					this.removeChildPermitArea(ch);
 					return super.addPermitArea(pa);
 				}
 
@@ -118,8 +117,13 @@ public class WorldPermitArea extends PermitArea {
 	@Override
 	public void saveToConfiguration(ConfigurationSection cs) {
 
+		cs.set("allowMiningUnspecifiedBlocks", getAllowMiningUnspecifiedBlocks());
+		cs.set("effectiveDepth", getEffectiveDepth());
+
 		cs.set("prices", null);
-		getPrices().saveToConf(cs.createSection("prices"));
+		ConfigurationSection prices = cs.createSection("prices");
+
+		getPrices().saveToConf(prices);
 
 		cs.set("children", null);
 		ConfigurationSection children = cs.createSection("children");
@@ -127,14 +131,6 @@ public class WorldPermitArea extends PermitArea {
 		for (String s : this.getChildren().keySet())
 			this.getChildPermitArea(s).saveToConfiguration(children.createSection(s));
 
-	}
-
-	public void setAllowMiningUnspecifiedBlocks(boolean flag) {
-		allowMiningUnspecifiedBlocks = flag;
-	}
-
-	public boolean getAllowMiningUnspecifiedBlocks() {
-		return allowMiningUnspecifiedBlocks;
 	}
 
 }

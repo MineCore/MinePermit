@@ -3,6 +3,7 @@ package net.minecore.minepermit.permits;
 import java.security.InvalidParameterException;
 
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 
 public class BlockCountPermit extends Permit {
@@ -26,14 +27,6 @@ public class BlockCountPermit extends Permit {
 		return count;
 	}
 
-	public boolean mineBlock() {
-		if (count == 0)
-			return false;
-
-		count--;
-		return true;
-	}
-
 	@Override
 	public void save(ConfigurationSection cs) {
 		// TODO Auto-generated method stub
@@ -48,6 +41,15 @@ public class BlockCountPermit extends Permit {
 	@Override
 	public String toString() {
 		return "BlockCountPermit with " + count + " blocks remaining";
+	}
+
+	@Override
+	public boolean breakBlock(Block block) {
+		if (count == 0)
+			return false;
+
+		count--;
+		return true;
 	}
 
 }

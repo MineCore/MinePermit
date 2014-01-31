@@ -1,6 +1,7 @@
 package net.minecore.minepermit.permits;
 
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.configuration.ConfigurationSection;
 
 public class TimedPermit extends Permit {
@@ -44,6 +45,11 @@ public class TimedPermit extends Permit {
 	@Override
 	public String toString() {
 		return "TimedPermit with " + getRemainingTime() + " seconds remaining";
+	}
+
+	@Override
+	public boolean breakBlock(Block block) {
+		return canStillBreakBlocks();
 	}
 
 }

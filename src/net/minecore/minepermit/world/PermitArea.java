@@ -7,7 +7,7 @@ import java.security.InvalidParameterException;
 import java.util.Map;
 import java.util.TreeMap;
 
-import net.minecore.minepermit.permits.PermitType;
+import net.minecore.minepermit.price.Price;
 import net.minecore.minepermit.price.PriceList;
 
 import org.bukkit.Location;
@@ -23,8 +23,9 @@ public abstract class PermitArea {
 
 	private final Map<String, ContainablePermitArea> children;
 	private final PriceList pl;
-	private int effective_depth;
+	private int effectiveDepth;
 	private String name;
+	private boolean allowMiningUnspecifiedBlocks;
 
 	public PermitArea(String name, PriceList pl) {
 
@@ -35,6 +36,9 @@ public abstract class PermitArea {
 
 		this.pl = pl;
 		children = new TreeMap<String, ContainablePermitArea>();
+
+		allowMiningUnspecifiedBlocks = false;
+		effectiveDepth = 65;
 	}
 
 	/**
@@ -100,11 +104,17 @@ public abstract class PermitArea {
 	 * @return A Y-Coord between 0 and the world height limit.
 	 */
 	public int getEffectiveDepth() {
-		return effective_depth;
+		return effectiveDepth;
 	}
 
+	/**
+	 * Sets the effective depth of this PermitArea
+	 * 
+	 * @param y
+	 *            The depth
+	 */
 	public void setEffectiveDepth(int y) {
-		effective_depth = y;
+		effectiveDepth = y;
 	}
 
 	/**
@@ -115,25 +125,26 @@ public abstract class PermitArea {
 	public abstract World getWorld();
 
 	/**
-	 * Checks if the given block must have a permit to be mined
-	 * 
-	 * @param id
-	 *            block id of the material to be checked.
-	 * @return True if a permit is required
-	 */
-	public boolean requiresPermit(Material m) {
-		return getPrices().getPrice(m) != -1;
-	}
-
-	/**
 	 * Gets the price to buy this permit.
 	 * 
 	 * @param m
 	 *            The material to check
-	 * @return The price, or -1 if a permit is not required
+	 * @return A Price, or null if it is not tracked
 	 */
-	public int getPrice(Material m) {
+	public Price getPrice(Material m) {
 		return getPrices().getPrice(m);
+	}
+
+	/**
+	 * Gets whether this material requires a permit to be mined. Does NOT take
+	 * into account allowMiningUnspecifiedBlocks
+	 * 
+	 * @param m
+	 *            Material to check
+	 * @return True if it requires a permit.
+	 */
+	public boolean requiresPermit(Material m) {
+		return getPrice(m) != null;
 	}
 
 	/**
@@ -196,8 +207,8 @@ public abstract class PermitArea {
 	 * @return The PermitArea, or null if it is not contained in this
 	 *         PermitArea.
 	 */
-	public ContainablePermitArea removeChildPermitArea(String name) {
-		return children.remove(name);
+	public ContainablePermitArea removeChildPermitArea(ContainablePermitArea pa) {
+		return children.remove(pa.getName());
 	}
 
 	/**
@@ -229,15 +240,41 @@ public abstract class PermitArea {
 	 */
 	public abstract void saveToConfiguration(ConfigurationSection cs);
 
+	/**
+	 * Gets a string that can be used to directly get this PermitArea
+	 * 
+	 * @return A String
+	 */
 	public String getStringRepresentation() {
 		return name;
 	}
 
-	public abstract int getUniversalPermitCost(PermitType counted);
+	/**
+	 * Gets the Price of the UniversalPermit
+	 * 
+	 * @return A Price, or null if it isnt availible
+	 */
+	public Price getUniversalPermitPrice() {
+		return pl.getUniversalPrice();
+	}
 
-	public double getUniversalPrice(PermitType type) {
-		// TODO Auto-generated method stub
-		return 0;
+	/**
+	 * Sets whether blocks with no price can still be mined
+	 * 
+	 * @param flag
+	 *            True or False
+	 */
+	public void setAllowMiningUnspecifiedBlocks(boolean flag) {
+		allowMiningUnspecifiedBlocks = flag;
+	}
+
+	/**
+	 * Gets whether blocks that have no price can be mined
+	 * 
+	 * @return True or False
+	 */
+	public boolean getAllowMiningUnspecifiedBlocks() {
+		return allowMiningUnspecifiedBlocks;
 	}
 
 }

@@ -59,9 +59,8 @@ public class WorldPermitAreaManager {
 
 			ConfigurationSection worldCS = root.getConfigurationSection(worldKey);
 
-			WorldPermitArea worldPA = new WorldPermitArea(Bukkit.getWorld(worldKey),
-					InertPriceList.loadFromConfigurationSection(worldCS
-							.getConfigurationSection("prices")));
+			WorldPermitArea worldPA = WorldPermitArea.loadPermitArea(Bukkit.getWorld(worldKey),
+					worldCS);
 
 			worldPA.setEffectiveDepth(worldCS.getInt("effectiveDepth"));
 			worldPA.setAllowMiningUnspecifiedBlocks(worldCS

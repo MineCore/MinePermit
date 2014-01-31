@@ -8,38 +8,61 @@ import org.bukkit.configuration.ConfigurationSection;
 
 public class InertPriceList implements PriceList {
 
-	private final TreeMap<Material, Integer> prices;
+	private final TreeMap<Material, Price> prices;
+	private Price universalPrice;
 
 	public InertPriceList() {
-		prices = new TreeMap<Material, Integer>();
+		prices = new TreeMap<Material, Price>();
 	}
 
 	@Override
-	public int getPrice(Material m) {
-		Object o = prices.get(m);
-		return (Integer) (o == null ? -1 : o);
+	public Price getPrice(Material m) {
+		return prices.get(m);
 	}
 
 	@Override
-	public Map<Material, Integer> getPrices() {
+	public Map<Material, Price> getPrices() {
 		return prices;
 	}
 
 	@Override
 	public void saveToConf(ConfigurationSection cs) {
-
 		for (Material m : prices.keySet())
 			cs.set(m.name(), prices.get(m));
 	}
 
 	@Override
-	public void setPrice(Material m, int cost) {
-		prices.put(m, cost);
+	public void setPrice(Material m, Price price) {
+		prices.put(m, price);
 	}
 
-	public static PriceList loadFromConfigurationSection(ConfigurationSection configurationSection) {
-		// TODO Auto-generated method stub
-		return null;
+	public static InertPriceList loadFromConfigurationSection(ConfigurationSection cs) {
+		InertPriceList pl = new InertPriceList();
+
+		for (String key : cs.getKeys(false)) {
+
+			if (cs.isConfigurationSection(key)) {
+				ConfigurationSection material = cs.getConfigurationSection(key);
+
+				if (key.equalsIgnoreCase("UNIVERSAL"))
+					pl.setUniversalPrice(Price.readFromConfigurationSection(material));
+				else
+					pl.setPrice(Material.matchMaterial(key),
+							Price.readFromConfigurationSection(material));
+			}
+		}
+
+		return pl;
+	}
+
+	@Override
+	public Price getUniversalPrice() {
+		return universalPrice;
+	}
+
+	@Override
+	public void setUniversalPrice(Price p) {
+		universalPrice = p;
 	}
 
 }

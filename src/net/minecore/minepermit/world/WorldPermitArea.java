@@ -10,7 +10,8 @@ import org.bukkit.configuration.InvalidConfigurationException;
 
 public class WorldPermitArea extends PermitArea {
 
-	private World w;
+	private final World w;
+	private boolean allowMiningUnspecifiedBlocks;
 
 	public WorldPermitArea(World w, PriceList pl) {
 
@@ -23,14 +24,14 @@ public class WorldPermitArea extends PermitArea {
 	public boolean contains(Location l) {
 		return l.getWorld().getName().equals(w.getName());
 	}
-	
+
 	@Override
-	public boolean contains(PermitArea pa){
+	public boolean contains(PermitArea pa) {
 		return pa.getWorld().equals(w);
 	}
-	
+
 	@Override
-	public boolean intersects(PermitArea pa){
+	public boolean intersects(PermitArea pa) {
 		return pa.getWorld().equals(w);
 	}
 
@@ -55,23 +56,23 @@ public class WorldPermitArea extends PermitArea {
 		if (!pa.getWorld().equals(w))
 			return false;
 
-		for(ContainablePermitArea ch : this.getChildren().values())
-			if(ch.intersects(pa)){
-				
-				if(pa.contains(ch)){
+		for (ContainablePermitArea ch : this.getChildren().values())
+			if (ch.intersects(pa)) {
+
+				if (pa.contains(ch)) {
 					pa.addPermitArea(ch);
 					this.removeChildPermitArea(ch.getName());
 					return super.addPermitArea(pa);
 				}
-				
+
 				return false;
-				
-			} else if(pa.intersects(ch)){
-				
-				if(ch.contains(pa)){
+
+			} else if (pa.intersects(ch)) {
+
+				if (ch.contains(pa)) {
 					return ch.addPermitArea(pa);
 				}
-				
+
 				return false;
 			}
 
@@ -81,27 +82,19 @@ public class WorldPermitArea extends PermitArea {
 	/**
 	 * Creates a new WorldPermitArea based on the given ConfigurationSection
 	 * 
-	 * @param cs ConfigurationSection with the settings for a WorldPermitArea
+	 * @param cs
+	 *            ConfigurationSection with the settings for a WorldPermitArea
 	 * @return A new WorldPermitArea
 	 */
-	public static WorldPermitArea loadPermitArea(World w,
-			ConfigurationSection cs) {
-		PriceList pl = new InertPriceList();
+	public static WorldPermitArea loadPermitArea(World w, ConfigurationSection cs) {
 
-		ConfigurationSection prices = cs.getConfigurationSection("prices");
-
-		if (prices != null)
-
-			for (String s : prices.getKeys(false))
-				if (prices.isInt(s)) {
-					try {
-						pl.setPrice(Integer.parseInt(s), prices.getInt(s));
-					} catch (NumberFormatException e) {
-						
-					}
-				}
+		PriceList pl = InertPriceList.loadFromConfigurationSection(cs
+				.getConfigurationSection("prices"));
 
 		WorldPermitArea area = new WorldPermitArea(w, pl);
+
+		area.setAllowMiningUnspecifiedBlocks(cs.getBoolean("allowMiningUnspecifiedBlocks"));
+		area.setEffectiveDepth(cs.getInt("effectiveDepth"));
 
 		ConfigurationSection children = cs.getConfigurationSection("children");
 
@@ -110,10 +103,10 @@ public class WorldPermitArea extends PermitArea {
 			for (String s : children.getKeys(false))
 				if (cs.isConfigurationSection(s))
 					try {
-						area.addPermitArea(LocationPermitArea.loadPermitArea(s,
-								w, cs.getConfigurationSection(s)));
+						area.addPermitArea(LocationPermitArea.loadPermitArea(s, w,
+								cs.getConfigurationSection(s)));
 					} catch (InvalidConfigurationException e) {
-						//TODO: This could be better
+						// TODO: This could be better
 						e.printStackTrace();
 					}
 
@@ -124,19 +117,24 @@ public class WorldPermitArea extends PermitArea {
 
 	@Override
 	public void saveToConfiguration(ConfigurationSection cs) {
-		
+
 		cs.set("prices", null);
-		ConfigurationSection prices = cs.createSection("prices");
-		
-		for(int i : this.getPrices().getPrices().keySet())
-			prices.set(i + "", this.getPrices().getPrice(i));
-		
+		getPrices().saveToConf(cs.createSection("prices"));
+
 		cs.set("children", null);
 		ConfigurationSection children = cs.createSection("children");
-		
-		for(String s : this.getChildren().keySet())
+
+		for (String s : this.getChildren().keySet())
 			this.getChildPermitArea(s).saveToConfiguration(children.createSection(s));
-		
+
+	}
+
+	public void setAllowMiningUnspecifiedBlocks(boolean flag) {
+		allowMiningUnspecifiedBlocks = flag;
+	}
+
+	public boolean getAllowMiningUnspecifiedBlocks() {
+		return allowMiningUnspecifiedBlocks;
 	}
 
 }

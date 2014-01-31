@@ -10,18 +10,33 @@ public interface PriceList {
 	/**
 	 * Gets the price for the given material
 	 * 
-	 * @param id
-	 *            Id of the material to get the price of
-	 * @return The price or
+	 * @param m
+	 *            Material of the object
+	 * @return The price or null if there is no price
 	 */
-	public int getPrice(Material m);
+	public Price getPrice(Material m);
+
+	/**
+	 * Gets the price for the universal Permit
+	 * 
+	 * @return A Price, or null if a Universal Permit isn't available
+	 */
+	public Price getUniversalPrice();
+
+	/**
+	 * Sets the Universal Price
+	 * 
+	 * @param p
+	 *            The price to set it to.
+	 */
+	public void setUniversalPrice(Price p);
 
 	/**
 	 * Gets all the prices contained in this PriceList
 	 * 
 	 * @return A map, potentially empty
 	 */
-	public Map<Material, Integer> getPrices();
+	public Map<Material, Price> getPrices();
 
 	/**
 	 * Saves this PriceList in the given ConfigurationSection
@@ -29,13 +44,13 @@ public interface PriceList {
 	public void saveToConf(ConfigurationSection cs);
 
 	/**
-	 * Sets the cost for the given material id
+	 * Sets the cost for the given material
 	 * 
 	 * @param id
 	 *            ID of the material to set the cost of.
 	 * @param cost
 	 *            Cost to set it to
 	 */
-	public void setPrice(Material m, int cost);
+	public void setPrice(Material m, Price p);
 
 }

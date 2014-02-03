@@ -5,8 +5,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import net.minecore.minepermit.permits.Permit;
-import net.minecore.minepermit.permits.UniversalPermit;
-import net.minecore.minepermit.world.PermitArea;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -14,23 +12,21 @@ import org.bukkit.configuration.ConfigurationSection;
 public class PermitHolder {
 
 	private final Map<Material, Permit> permits;
-	private final PermitArea pa;
-	private UniversalPermit up;
+	private Permit universalPermit;
 
-	public PermitHolder(PermitArea pa) {
-		this.pa = pa;
+	public PermitHolder() {
 		permits = new TreeMap<Material, Permit>();
 	}
 
 	public boolean hasUniversalPermit() {
 		checkUniversalPermit();
 
-		return up != null;
+		return universalPermit != null;
 	}
 
 	private void checkUniversalPermit() {
-		if (!up.canStillBreakBlocks())
-			up = null;
+		if (!universalPermit.canStillBreakBlocks())
+			universalPermit = null;
 	}
 
 	public boolean addPermit(Permit p) {
@@ -77,27 +73,26 @@ public class PermitHolder {
 
 	}
 
-	public boolean addUniversalPermit(UniversalPermit p) {
+	public boolean addUniversalPermit(Permit p) {
 		checkUniversalPermit();
 		if (hasUniversalPermit())
 			return false;
-		up = p;
+		universalPermit = p;
 		return true;
 	}
 
-	/**
-	 * @return the pa
-	 */
-	public PermitArea getPermitArea() {
-		return pa;
-	}
-
-	public UniversalPermit getUniversalPermit() {
-		return up;
+	public Permit getUniversalPermit() {
+		return universalPermit;
 	}
 
 	public Collection<Permit> getPermits() {
 		return permits.values();
+	}
+
+	public static PermitHolder createPermitHolderFromConfigurationSection(ConfigurationSection cs) {
+		PermitHolder ph = new PermitHolder();
+
+		return ph;
 	}
 
 }

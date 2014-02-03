@@ -21,6 +21,10 @@ public class TimedPermit extends Permit {
 		end_time = System.currentTimeMillis() + time * 1000L;
 	}
 
+	public TimedPermit(ConfigurationSection perm) {
+		this(Material.matchMaterial(perm.getString("material")), perm.getInt("time"));
+	}
+
 	public long getRemainingTime() {
 		long remaining = end_time - System.currentTimeMillis();
 		if (remaining <= 0) {
@@ -33,8 +37,9 @@ public class TimedPermit extends Permit {
 
 	@Override
 	public void save(ConfigurationSection cs) {
-		// TODO Auto-generated method stub
-
+		cs.set("type", getPermitType());
+		cs.set("material", getMaterial());
+		cs.set("time", getRemainingTime());
 	}
 
 	@Override

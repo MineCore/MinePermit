@@ -4,7 +4,10 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.TreeMap;
 
+import net.minecore.minepermit.permits.BlockCountPermit;
 import net.minecore.minepermit.permits.Permit;
+import net.minecore.minepermit.permits.PermitType;
+import net.minecore.minepermit.permits.TimedPermit;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -91,6 +94,30 @@ public class PermitHolder {
 
 	public static PermitHolder createPermitHolderFromConfigurationSection(ConfigurationSection cs) {
 		PermitHolder ph = new PermitHolder();
+
+		for (String key : cs.getKeys(false)) {
+
+			if (cs.isConfigurationSection(key)) {
+
+				ConfigurationSection perm = cs.getConfigurationSection(key);
+				Permit permit = null;
+
+				switch (PermitType.valueOf(perm.getString("type").toUpperCase())) {
+				case COUNTED:
+					permit = new BlockCountPermit(perm);
+					break;
+				case TIMED:
+					permit = new TimedPermit(perm);
+					break;
+				}
+
+				if (permit.getMaterial() != null)
+					ph.addPermit(permit);
+				else
+					ph.addUniversalPermit(permit);
+			}
+
+		}
 
 		return ph;
 	}

@@ -15,6 +15,10 @@ public class BlockCountPermit extends Permit {
 		this.count = count;
 	}
 
+	public BlockCountPermit(ConfigurationSection perm) {
+		this(Material.matchMaterial(perm.getString("material")), perm.getInt("amt"));
+	}
+
 	public void setRemainingBlocks(int count) {
 
 		if (count < 0)
@@ -29,7 +33,9 @@ public class BlockCountPermit extends Permit {
 
 	@Override
 	public void save(ConfigurationSection cs) {
-		// TODO Auto-generated method stub
+		cs.set("type", getPermitType());
+		cs.set("material", getMaterial());
+		cs.set("amt", getRemainingBlocks());
 
 	}
 

@@ -5,7 +5,6 @@ import java.util.TreeMap;
 
 import net.minecore.Miner;
 import net.minecore.minepermit.permits.Permit;
-import net.minecore.minepermit.permits.UniversalPermit;
 import net.minecore.minepermit.world.PermitArea;
 
 import org.bukkit.Material;
@@ -26,7 +25,8 @@ public class PermitMiner {
 			if (cs.isConfigurationSection(key)) {
 				PermitHolder ph = new PermitHolder();
 				permits.put(key, ph);
-				ph.loadFrom(cs.getConfigurationSection(key));
+				PermitHolder.createPermitHolderFromConfigurationSection(cs
+						.getConfigurationSection(key));
 			}
 
 		}
@@ -42,14 +42,11 @@ public class PermitMiner {
 
 	public boolean addPermit(PermitArea pa, Permit p) {
 
-		if (p instanceof UniversalPermit)
-			return addUniversalPermit(pa, (UniversalPermit) p);
-
 		return getPermitHolder(pa).addPermit(p);
 
 	}
 
-	private boolean addUniversalPermit(PermitArea pa, UniversalPermit p) {
+	public boolean addUniversalPermit(PermitArea pa, Permit p) {
 		return getPermitHolder(pa).addUniversalPermit(p);
 	}
 

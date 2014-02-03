@@ -11,9 +11,6 @@ import net.minecore.minepermit.permits.BlockCountPermit;
 import net.minecore.minepermit.permits.Permit;
 import net.minecore.minepermit.permits.PermitType;
 import net.minecore.minepermit.permits.TimedPermit;
-import net.minecore.minepermit.permits.UniversalBlockCountPermit;
-import net.minecore.minepermit.permits.UniversalPermit;
-import net.minecore.minepermit.permits.UniversalTimedPermit;
 import net.minecore.minepermit.world.PermitArea;
 import net.minecore.minepermit.world.WorldPermitAreaManager;
 
@@ -145,15 +142,15 @@ public class CommandInterpreter implements CommandExecutor {
 					return true;
 				}
 
-				UniversalPermit upermit;
+				Permit upermit;
 
 				switch (type) {
 				case COUNTED:
-					upermit = new UniversalBlockCountPermit(pa.getUniversalPermitPrice().getAmount(
+					upermit = new BlockCountPermit(null, pa.getUniversalPermitPrice().getAmount(
 							type));
 					break;
 				case TIMED:
-					upermit = new UniversalTimedPermit(pa.getUniversalPermitPrice().getAmount(type));
+					upermit = new TimedPermit(null, pa.getUniversalPermitPrice().getAmount(type));
 					break;
 				default:
 					return false;
@@ -244,7 +241,7 @@ public class CommandInterpreter implements CommandExecutor {
 			return;
 		}
 
-		UniversalPermit up = ph.getUniversalPermit();
+		Permit up = ph.getUniversalPermit();
 
 		if (up != null) {
 			player.sendMessage(ChatColor.DARK_GREEN + up.toString());

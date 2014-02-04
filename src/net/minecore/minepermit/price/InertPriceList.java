@@ -5,6 +5,7 @@ import java.util.TreeMap;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
 
 public class InertPriceList implements PriceList {
 
@@ -36,19 +37,25 @@ public class InertPriceList implements PriceList {
 		prices.put(m, price);
 	}
 
-	public static InertPriceList loadFromConfigurationSection(ConfigurationSection cs) {
+	public static InertPriceList loadFromConfigurationSection(ConfigurationSection cs)
+			throws InvalidConfigurationException {
 		InertPriceList pl = new InertPriceList();
 
 		for (String key : cs.getKeys(false)) {
 
 			if (cs.isConfigurationSection(key)) {
-				ConfigurationSection material = cs.getConfigurationSection(key);
 
-				if (key.equalsIgnoreCase("UNIVERSAL"))
-					pl.setUniversalPrice(Price.readFromConfigurationSection(material));
-				else
-					pl.setPrice(Material.matchMaterial(key),
-							Price.readFromConfigurationSection(material));
+				try {
+					ConfigurationSection material = cs.getConfigurationSection(key);
+
+					if (key.equalsIgnoreCase("UNIVERSAL"))
+						pl.setUniversalPrice(Price.readFromConfigurationSection(material));
+					else
+						pl.setPrice(Material.matchMaterial(key),
+								Price.readFromConfigurationSection(material));
+				} catch (Exception e) {
+					throw new InvalidConfigurationException(e.getMessage());
+				}
 			}
 		}
 

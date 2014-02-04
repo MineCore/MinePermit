@@ -2,6 +2,7 @@ package net.minecore.minepermit.world;
 
 import java.security.InvalidParameterException;
 
+import net.minecore.minepermit.MinePermit;
 import net.minecore.minepermit.price.InertPriceList;
 import net.minecore.minepermit.price.PriceList;
 
@@ -70,7 +71,7 @@ public class LocationPermitArea extends ContainablePermitArea {
 	public boolean addPermitArea(ContainablePermitArea pa) {
 
 		for (PermitArea ch : this.getChildren().values())
-			if (ch.intersects(pa) || pa.intersects(ch))
+			if (ch.intersects(pa))
 				return false;
 
 		return super.addPermitArea(pa);
@@ -106,16 +107,22 @@ public class LocationPermitArea extends ContainablePermitArea {
 		if (children != null) {
 
 			for (String s : children.getKeys(false))
-				if (cs.isConfigurationSection(s))
+				if (children.isConfigurationSection(s)) {
+					ConfigurationSection child = children.getConfigurationSection(s);
+					String childRep = child.getCurrentPath().replaceAll(".children", "");
 					try {
-						area.addPermitArea(LocationPermitArea.loadPermitArea(s, w,
-								cs.getConfigurationSection(s)));
+						MinePermit.log.info("Loading PermitArea " + childRep);
+						area.addPermitArea(LocationPermitArea.loadPermitArea(s, w, child));
+						MinePermit.log.info("Finished loading PermitArea " + childRep);
 					} catch (InvalidConfigurationException e) {
-						// TODO: This could be better
+						MinePermit.log.severe("Error loading PermitArea " + childRep);
 						e.printStackTrace();
 					}
+				}
 
 		}
+
+		MinePermit.log.info("Finished loading PermitArea " + name);
 
 		return area;
 	}
@@ -141,6 +148,31 @@ public class LocationPermitArea extends ContainablePermitArea {
 		for (String s : this.getChildren().keySet())
 			this.getChildPermitArea(s).saveToConfiguration(children.createSection(s));
 
+	}
+
+	@Override
+	public boolean contains(ContainablePermitArea pa) {
+
+		if (pa instanceof LocationPermitArea) {
+
+			LocationPermitArea contained = (LocationPermitArea) pa;
+
+			int higherX = Math.max(contained.l1.getBlockX(), contained.l2.getBlockX());
+			int lowerX = Math.min(contained.l1.getBlockX(), contained.l2.getBlockX());
+
+			int higherZ = Math.max(contained.l1.getBlockZ(), contained.l2.getBlockZ());
+			int lowerZ = Math.min(contained.l1.getBlockZ(), contained.l2.getBlockZ());
+
+			Location l1 = new Location(getWorld(), higherX, 0, higherZ);
+			Location l2 = new Location(getWorld(), higherX, 0, lowerZ);
+			Location l3 = new Location(getWorld(), lowerX, 0, higherZ);
+			Location l4 = new Location(getWorld(), lowerX, 0, lowerZ);
+
+			if (contains(l1) && contains(l2) && contains(l3) && contains(l4))
+				return true;
+		}
+
+		return false;
 	}
 
 }

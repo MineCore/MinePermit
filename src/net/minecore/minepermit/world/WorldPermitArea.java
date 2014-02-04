@@ -1,5 +1,6 @@
 package net.minecore.minepermit.world;
 
+import net.minecore.minepermit.MinePermit;
 import net.minecore.minepermit.price.InertPriceList;
 import net.minecore.minepermit.price.PriceList;
 
@@ -25,7 +26,7 @@ public class WorldPermitArea extends PermitArea {
 	}
 
 	@Override
-	public boolean contains(PermitArea pa) {
+	public boolean contains(ContainablePermitArea pa) {
 		return pa.getWorld().equals(w);
 	}
 
@@ -84,30 +85,36 @@ public class WorldPermitArea extends PermitArea {
 	 * @param cs
 	 *            ConfigurationSection with the settings for a WorldPermitArea
 	 * @return A new WorldPermitArea
+	 * @throws InvalidConfigurationException
 	 */
-	public static WorldPermitArea loadPermitArea(World w, ConfigurationSection cs) {
+	public static WorldPermitArea loadPermitArea(World w, ConfigurationSection cs)
+			throws InvalidConfigurationException {
 
 		PriceList pl = InertPriceList.loadFromConfigurationSection(cs
 				.getConfigurationSection("prices"));
 
 		WorldPermitArea area = new WorldPermitArea(w, pl);
 
-		area.setAllowMiningUnspecifiedBlocks(cs.getBoolean("allowMiningUnspecifiedBlocks"));
-		area.setEffectiveDepth(cs.getInt("effectiveDepth"));
+		area.setAllowMiningUnspecifiedBlocks(cs.getBoolean("allowMiningUnspecifiedBlocks", true));
+		area.setEffectiveDepth(cs.getInt("effectiveDepth", 65));
 
 		ConfigurationSection children = cs.getConfigurationSection("children");
 
 		if (children != null) {
 
 			for (String s : children.getKeys(false))
-				if (cs.isConfigurationSection(s))
+				if (children.isConfigurationSection(s)) {
+					ConfigurationSection child = children.getConfigurationSection(s);
+					String childRep = child.getCurrentPath().replaceAll(".children", "");
 					try {
-						area.addPermitArea(LocationPermitArea.loadPermitArea(s, w,
-								cs.getConfigurationSection(s)));
+						MinePermit.log.info("Loading PermitArea " + childRep);
+						area.addPermitArea(LocationPermitArea.loadPermitArea(s, w, child));
+						MinePermit.log.info("Finished loading PermitArea " + childRep);
 					} catch (InvalidConfigurationException e) {
-						// TODO: This could be better
+						MinePermit.log.severe("Error loading PermitArea " + childRep);
 						e.printStackTrace();
 					}
+				}
 
 		}
 

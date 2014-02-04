@@ -58,7 +58,7 @@ public abstract class PermitArea {
 	 * @return True if it is entirely contained in this area, including if they
 	 *         share any borders.
 	 */
-	public abstract boolean contains(PermitArea pa);
+	public abstract boolean contains(ContainablePermitArea pa);
 
 	/**
 	 * Checks to see whether the given PermitArea is at all contained in this

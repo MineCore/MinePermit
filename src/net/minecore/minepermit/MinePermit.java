@@ -15,7 +15,7 @@ public class MinePermit extends JavaPlugin {
 
 	private PermitMinerManager mm;
 
-	public Logger log;
+	public static Logger log;
 	private FileConfiguration conf;
 
 	private WorldPermitAreaManager am;

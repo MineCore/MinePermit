@@ -2,12 +2,14 @@ package net.minecore.minepermit.world;
 
 import java.util.TreeMap;
 
+import net.minecore.minepermit.MinePermit;
 import net.minecore.minepermit.price.InertPriceList;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
 
 public class WorldPermitAreaManager {
 
@@ -18,7 +20,7 @@ public class WorldPermitAreaManager {
 		areas = new TreeMap<String, WorldPermitArea>();
 	}
 
-	public boolean addPermitArea(PermitArea pa) {
+	public boolean addWorldPermitArea(PermitArea pa) {
 
 		if (pa instanceof WorldPermitArea) {
 			if (areas.containsKey(pa.getWorld()))
@@ -57,14 +59,19 @@ public class WorldPermitAreaManager {
 
 		for (String worldKey : root.getKeys(false)) {
 
-			ConfigurationSection worldCS = root.getConfigurationSection(worldKey);
-
-			WorldPermitArea worldPA = WorldPermitArea.loadPermitArea(Bukkit.getWorld(worldKey),
-					worldCS);
-
-			worldPA.setEffectiveDepth(worldCS.getInt("effectiveDepth"));
-			worldPA.setAllowMiningUnspecifiedBlocks(worldCS
-					.getBoolean("allowMiningUnspecifiedBlocks"));
+			if (root.isConfigurationSection(worldKey)) {
+				ConfigurationSection worldCS = root.getConfigurationSection(worldKey);
+				try {
+					MinePermit.log.info("Loading WorldPermitArea " + worldKey);
+					WorldPermitArea worldPA = WorldPermitArea.loadPermitArea(
+							Bukkit.getWorld(worldKey), worldCS);
+					am.addWorldPermitArea(worldPA);
+					MinePermit.log.info("Finished loading WorldPermitArea " + worldKey);
+				} catch (InvalidConfigurationException e) {
+					MinePermit.log.severe("Error loading WorldPermitArea " + worldKey);
+					e.printStackTrace();
+				}
+			}
 
 		}
 

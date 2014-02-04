@@ -5,6 +5,7 @@ import java.util.TreeMap;
 import net.minecore.minepermit.permits.PermitType;
 
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
 
 /**
  * Used to hold data about the Price for something, specifically permits
@@ -71,11 +72,16 @@ public class Price {
 	 * @param cs
 	 *            The ConfigurationSection to read
 	 * @return A new Price
+	 * @throws InvalidConfigurationException
 	 */
-	public static Price readFromConfigurationSection(ConfigurationSection cs) {
+	public static Price readFromConfigurationSection(ConfigurationSection cs)
+			throws InvalidConfigurationException {
 		Price p = new Price();
 
-		for (String key : cs.getKeys(false)) {
+		if (!cs.isConfigurationSection("types"))
+			throw new InvalidConfigurationException("No Types section for price " + cs.getName());
+
+		for (String key : cs.getConfigurationSection("types").getKeys(false)) {
 
 			if (cs.isConfigurationSection(key)) {
 				ConfigurationSection type = cs.getConfigurationSection(key);

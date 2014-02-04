@@ -88,6 +88,9 @@ public class LocationPermitArea extends ContainablePermitArea {
 	public static LocationPermitArea loadPermitArea(String name, World w, ConfigurationSection cs)
 			throws InvalidConfigurationException {
 
+		if (!cs.isConfigurationSection("prices"))
+			throw new InvalidConfigurationException("No prices section!");
+
 		PriceList pl = InertPriceList.loadFromConfigurationSection(cs
 				.getConfigurationSection("prices"));
 

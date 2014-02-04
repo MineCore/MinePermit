@@ -54,7 +54,9 @@ public class InertPriceList implements PriceList {
 						pl.setPrice(Material.matchMaterial(key),
 								Price.readFromConfigurationSection(material));
 				} catch (Exception e) {
-					throw new InvalidConfigurationException(e.getMessage());
+					e.printStackTrace();
+					throw new InvalidConfigurationException("Error loading price: " + key
+							+ " because " + e.getMessage());
 				}
 			}
 		}

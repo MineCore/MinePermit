@@ -23,7 +23,7 @@ public class WorldPermitAreaManager {
 	public boolean addWorldPermitArea(PermitArea pa) {
 
 		if (pa instanceof WorldPermitArea) {
-			if (areas.containsKey(pa.getWorld()))
+			if (areas.containsKey(pa.getWorld().getName()))
 				return false;
 
 			areas.put(pa.getWorld().getName(), (WorldPermitArea) pa);

@@ -44,9 +44,9 @@ public class PermitMinerManager {
 		for (PermitMiner pm : miners.values()) {
 			try {
 				pm.save();
-				mp.log.info("Data for " + mp.getName() + " saved");
+				MinePermit.log.info("Data for " + mp.getName() + " saved");
 			} catch (Exception e) {
-				mp.log.severe("Error Saving PermitMiner " + pm + "!");
+				MinePermit.log.severe("Error Saving PermitMiner " + pm + "!");
 				e.printStackTrace();
 			}
 		}

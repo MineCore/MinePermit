@@ -32,7 +32,7 @@ public class CommandInterpreter implements CommandExecutor {
 	public CommandInterpreter(MinePermit mp) {
 		areaManager = mp.getWorldPermitAreaManager();
 		mm = mp.getPermitMinerManager();
-		log = mp.log;
+		log = MinePermit.log;
 		econManager = mp.getMineCore().getEconomyManager();
 	}
 

@@ -45,7 +45,12 @@ public class BlockListener implements Listener {
 		}
 
 		PermitMiner pm = mm.getPermitMiner(p);
+
 		Permit permit = pm.getPermit(pa, e.getBlock().getType());
+
+		if (permit == null) {
+			permit = pm.getUniversalPermit(pa);
+		}
 
 		if (permit == null) {
 			e.setCancelled(true);

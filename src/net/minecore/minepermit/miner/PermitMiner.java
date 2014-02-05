@@ -50,6 +50,10 @@ public class PermitMiner {
 		return getPermitHolder(pa).addUniversalPermit(p);
 	}
 
+	public Permit getUniversalPermit(PermitArea pa) {
+		return getPermitHolder(pa).getUniversalPermit();
+	}
+
 	public Map<String, PermitHolder> getPermits() {
 		return permits;
 	}

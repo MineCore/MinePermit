@@ -37,8 +37,8 @@ public class TimedPermit extends Permit {
 
 	@Override
 	public void save(ConfigurationSection cs) {
-		cs.set("type", getPermitType());
-		cs.set("material", getMaterial());
+		cs.set("type", getPermitType().name());
+		cs.set("material", getMaterial().name());
 		cs.set("time", getRemainingTime());
 	}
 

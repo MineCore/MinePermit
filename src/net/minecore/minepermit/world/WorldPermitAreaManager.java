@@ -36,7 +36,7 @@ public class WorldPermitAreaManager {
 	}
 
 	public WorldPermitArea getWorldPermitArea(World world) {
-		WorldPermitArea wpa = areas.get(world);
+		WorldPermitArea wpa = areas.get(world.getName());
 		if (wpa == null) {
 			wpa = new WorldPermitArea(world, new InertPriceList());
 			areas.put(world.getName(), wpa);
@@ -63,8 +63,7 @@ public class WorldPermitAreaManager {
 				ConfigurationSection worldCS = root.getConfigurationSection(worldKey);
 				try {
 					MinePermit.log.info("Loading WorldPermitArea " + worldKey);
-					WorldPermitArea worldPA = WorldPermitArea.loadPermitArea(
-							Bukkit.getWorld(worldKey), worldCS);
+					WorldPermitArea worldPA = WorldPermitArea.loadPermitArea(Bukkit.getWorld(worldKey), worldCS);
 					am.addWorldPermitArea(worldPA);
 					MinePermit.log.info("Finished loading WorldPermitArea " + worldKey);
 				} catch (InvalidConfigurationException e) {

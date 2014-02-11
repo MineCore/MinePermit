@@ -81,8 +81,7 @@ public class CommandInterpreter implements CommandExecutor {
 				} else if (local.equalsIgnoreCase("world")) {
 
 					for (String paString : permits.keySet()) {
-						if (paString.substring(0, paString.indexOf('.')).equals(
-								player.getLocation().getWorld().getName()))
+						if (paString.substring(0, paString.indexOf('.')).equals(player.getLocation().getWorld().getName()))
 							printPermitHolder(permits.get(paString), player);
 					}
 
@@ -99,8 +98,7 @@ public class CommandInterpreter implements CommandExecutor {
 			if (arg3.length < 2) {
 
 				for (PermitType pt : PermitType.values())
-					player.sendMessage(ChatColor.AQUA + "The cost for the Universal " + pt.name()
-							+ "permit for this world is " + pa.getUniversalPermitPrice());
+					player.sendMessage(ChatColor.AQUA + "The cost for the Universal " + pt.name() + "permit for this world is " + pa.getUniversalPermitPrice());
 
 				return true;
 			}
@@ -131,8 +129,12 @@ public class CommandInterpreter implements CommandExecutor {
 			if (arg3[1].equalsIgnoreCase("universal")) {
 				// Check if the player already has the Universal permit
 				if (pm.getPermitHolder(pa).hasUniversalPermit()) {
-					player.sendMessage("" + ChatColor.YELLOW
-							+ "You already have a Universal Permit for here!");
+					player.sendMessage("" + ChatColor.YELLOW + "You already have a Universal Permit for here!");
+					return true;
+				}
+
+				if (!pa.getUniversalPermitPrice().typeAvailible(type)) {
+					player.sendMessage(ChatColor.RED + "This type is not availible for Universal Permits here!");
 					return true;
 				}
 
@@ -146,8 +148,7 @@ public class CommandInterpreter implements CommandExecutor {
 
 				switch (type) {
 				case COUNTED:
-					upermit = new BlockCountPermit(null, pa.getUniversalPermitPrice().getAmount(
-							type));
+					upermit = new BlockCountPermit(null, pa.getUniversalPermitPrice().getAmount(type));
 					break;
 				case TIMED:
 					upermit = new TimedPermit(null, pa.getUniversalPermitPrice().getAmount(type));
@@ -171,19 +172,24 @@ public class CommandInterpreter implements CommandExecutor {
 
 			// Check if a permit is required for this block
 			if (!pa.requiresPermit(m)) {
-				player.sendMessage("" + ChatColor.GRAY + "A permit is not required for this item.");
+				player.sendMessage(ChatColor.GRAY + "A permit is not required for this item.");
 				return true;
 			}
 
 			// Check if the player already has a permit for this
 			if (pm.hasPermit(pa, m)) {
-				player.sendMessage("" + ChatColor.YELLOW + "You already have a permit for this!");
+				player.sendMessage(ChatColor.YELLOW + "You already have a permit for this!");
+				return true;
+			}
+
+			if (!pa.getPrice(m).typeAvailible(type)) {
+				player.sendMessage(ChatColor.RED + "This type is not availible for this block!");
 				return true;
 			}
 
 			// Charge player if possible
 			if (!econManager.charge(player, pa.getPrice(m).getCost(type))) {
-				player.sendMessage("" + ChatColor.DARK_RED + "You dont have enough money!");
+				player.sendMessage(ChatColor.DARK_RED + "You dont have enough money!");
 				return true;
 			}
 

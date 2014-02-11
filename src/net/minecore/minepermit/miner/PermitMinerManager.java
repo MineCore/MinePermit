@@ -33,8 +33,12 @@ public class PermitMinerManager {
 
 	private PermitMiner loadMiner(String playerName) {
 
+		MinePermit.log.info("Loading player " + playerName + "...");
+
 		PermitMiner pm = new PermitMiner(mp.getMineCore().getMiner(playerName));
 		miners.put(playerName, pm);
+
+		MinePermit.log.info("Finished loading player " + playerName + "!");
 
 		return pm;
 	}

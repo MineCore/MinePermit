@@ -15,8 +15,7 @@ commands:
             /<command> remaining ["here"|"world"|material_name] - Shows remaining time or blocks for the specified permits
             /<command> buy <material_name/"universal"> <"timed"|"counted"> - Buys permit
             /<command> cost [material name] - Display cost of certain permit. No param displays price for universal permit
-            /<command> time {id} - Displays remaining time for permit. No param displays all owned permits
-            /<command> view {id} - Returns if a permit is required for this block. No param returns all required permits
+            /<command> view {material} - Returns if a permit is required for this block. No param returns all required permits
         permission: MinePermit.buy
 
 permissions:

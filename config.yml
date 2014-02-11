@@ -1,39 +1,57 @@
 # MinePermit Default Configuration File
 #
 # This file is the default configuration file for 
-# MinePermit. Though it will work by default, there
-# will be no required permits, so it will be useless.
-#
-#Example blocks:
-# 
-# 
-#
-#Blocks:
-#  gold:              #Whatever is put here doesnt matter, it is just a name for reference.
-#    id: 14           #The id number of the block
-#    cost: 20         #How much this block will cost.
-#
-#
-#    
+# MinePermit.
 
-#How much the universal permit will cost (i, what is cost to buy all permits)
-UniversalPermitCost: 300
-
-#How long each permit purchase adds to the timer
-DefaultPermitDuration: 360
-
-#The item which will be removed from a player's inventory on purchase
-currencyBlockID: 260
-
-#Whether to allow players to buy several permits for the same item, which will just increase the time their permit will last.
-AllowMultiPurchase: true
-
-#Whether to use Vault to hook into an economy and/or a permission system
-UseVaultEconomy: false
-UseVaultPermissions: false
-
-#The language file to use which must be in the languages folder. If blank will revert to default.
-LanguageFile:
-
-Blocks:
-   
+WorldPermitAreas:                         #All world configs go under here.
+  world:                                  #The name of the world
+    allowMiningUnspecifiedBlocks: false   #Whether blocks not specified under 'prices' can be mined
+    effectiveDepth: 65                 #Below what depth should permits be required?
+    prices:                            #Prices for the permits in this permit area. Does not cascade to children.
+      UNIVERSAL:                       #The material type. If the name is 'UNIVERSAL', then the price information is used for the UniversalPermit
+        types:                         #The different types of permits to use
+          COUNTED:                     #The type of permit
+            price: 1000                #The price to buy the permit
+            amount: 50                 #How much time/blocks the player gets to use/mine for the permit.
+          TIMED:
+            price: 10000
+            amount: 3600
+      GOLD_ORE:
+        types:
+          COUNTED:
+            price: 100
+            amount: 30
+          TIMED:
+            price: 300
+            amount: 1000
+      IRON_ORE:
+        types:
+          COUNTED:
+            price: 50
+            amount: 40
+      LAPIS_ORE:                           #If its empty, it cannot be mined.
+        types:                           #Just make sure to have the 'types' section
+      COAL:
+        types:
+          COUNTED:
+            price: 30
+            amount: 70
+      STONE:
+        types:
+          TIMED:
+            price: 10
+            amount: 60000
+    children:                              #PermitAreas that are contained by this Permit Area
+      DasMine:                             #The name (doesnt really do anything)
+        x1: 123                            #Coordinates within the world. NOT respective to parent permit area
+        z1: 2
+        x2: 321
+        z2: 56
+        allowMiningUnspecifiedBlocks: true
+        effectiveDepth: 70
+        prices:
+          STONE:
+            types:
+              COUNTED:
+                price: 600
+                amount: 60

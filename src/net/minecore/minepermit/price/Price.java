@@ -74,18 +74,19 @@ public class Price {
 	 * @return A new Price
 	 * @throws InvalidConfigurationException
 	 */
-	public static Price readFromConfigurationSection(ConfigurationSection cs)
-			throws InvalidConfigurationException {
+	public static Price readFromConfigurationSection(ConfigurationSection cs) throws InvalidConfigurationException {
 		Price p = new Price();
 
 		if (!cs.isConfigurationSection("types"))
-			throw new InvalidConfigurationException("No Types section for price " + cs.getName());
+			cs.createSection("types");
 
-		for (String key : cs.getConfigurationSection("types").getKeys(false)) {
+		ConfigurationSection types = cs.getConfigurationSection("types");
 
-			if (cs.isConfigurationSection(key)) {
-				ConfigurationSection type = cs.getConfigurationSection(key);
-				p.addType(PermitType.valueOf(key), type.getInt("cost"), type.getInt("amount"));
+		for (String key : types.getKeys(false)) {
+
+			if (types.isConfigurationSection(key)) {
+				ConfigurationSection type = types.getConfigurationSection(key);
+				p.addType(PermitType.valueOf(key), type.getInt("price"), type.getInt("amount"));
 			}
 
 		}
@@ -98,9 +99,12 @@ public class Price {
 		String s = "";
 
 		for (PermitType pt : cost.keySet())
-			s = s + cost.get(pt) + " for a " + pt.name() + " permit, giving " + amount.get(pt)
-					+ "/n";
+			s = s + cost.get(pt) + " for a " + pt.name() + " permit, giving " + amount.get(pt) + "/n";
 
 		return s;
+	}
+
+	public boolean typeAvailible(PermitType type) {
+		return cost.containsKey(type);
 	}
 }

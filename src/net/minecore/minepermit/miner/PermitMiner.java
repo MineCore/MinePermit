@@ -18,15 +18,13 @@ public class PermitMiner {
 	public PermitMiner(Miner miner) {
 		this.miner = miner;
 		permits = new TreeMap<String, PermitHolder>();
-		ConfigurationSection cs = miner.getConfigurationSection("minepermit.permits");
+		ConfigurationSection cs = miner.getConfigurationSection("MinePermit.permits");
 
 		for (String key : cs.getKeys(false)) {
 
 			if (cs.isConfigurationSection(key)) {
-				PermitHolder ph = new PermitHolder();
-				permits.put(key, ph);
-				PermitHolder.createPermitHolderFromConfigurationSection(cs
-						.getConfigurationSection(key));
+				permits.put(key, PermitHolder.createPermitHolderFromConfigurationSection(cs.getConfigurationSection(key)));
+
 			}
 
 		}
@@ -76,7 +74,7 @@ public class PermitMiner {
 	}
 
 	public void save() {
-		ConfigurationSection cs = miner.getConfigurationSection("permits");
+		ConfigurationSection cs = miner.getConfigurationSection("MinePermit.permits");
 		for (String key : permits.keySet()) {
 			String tmp = key.replace('.', '-');
 			ConfigurationSection child = cs.getConfigurationSection(tmp);

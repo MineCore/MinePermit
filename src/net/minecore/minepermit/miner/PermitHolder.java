@@ -28,7 +28,7 @@ public class PermitHolder {
 	}
 
 	private void checkUniversalPermit() {
-		if (!universalPermit.canStillBreakBlocks())
+		if (universalPermit != null && !universalPermit.canStillBreakBlocks())
 			universalPermit = null;
 	}
 

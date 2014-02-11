@@ -31,16 +31,6 @@ public class MinePermit extends JavaPlugin {
 		conf.addDefault("allowDataCollection", true);
 		if (!conf.isConfigurationSection("WorldPermitAreas"))
 			conf.createSection("WorldPermitAreas");
-		am = WorldPermitAreaManager.loadFromConfigurationSection(conf.getConfigurationSection("WorldPermitAreas"));
-
-		if (conf.getBoolean("allowDataCollection")) {
-			try {
-				metrics = new Metrics(this);
-				metrics.start();
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
-		}
 
 	}
 
@@ -56,6 +46,17 @@ public class MinePermit extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
+
+		am = WorldPermitAreaManager.loadFromConfigurationSection(conf.getConfigurationSection("WorldPermitAreas"));
+
+		if (conf.getBoolean("allowDataCollection")) {
+			try {
+				metrics = new Metrics(this);
+				metrics.start();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+		}
 
 		// Register the blockListener
 		this.getServer().getPluginManager().registerEvents(new BlockListener(this), this);

@@ -15,15 +15,15 @@ commands:
             /<command> buy <material_name/"universal"> <"timed"|"counted"> - Buys permit
             /<command> cost [material name] - Display cost of certain permit. No param displays price for universal permit
             /<command> view {material} - Returns if a permit is required for this block. No param returns all required permits
-        permission: MinePermit.buy
+        permission: minepermit.buy
 
 permissions:
-    MinePermit.buy:
+    minepermit.buy:
         description: Required to use all commands having to do with permits
         default: true
-    MinePermit.exempt:
+    minepermit.exempt:
         description: Exempts player from mining permit requirements
         default: false
-    MinePermit.admin:
+    minepermit.admin:
         description: Required for all admin commands
         default: op

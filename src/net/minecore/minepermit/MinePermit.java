@@ -20,15 +20,27 @@ public class MinePermit extends JavaPlugin {
 
 	private WorldPermitAreaManager am;
 
+	private Metrics metrics;
+
 	@Override
 	public void onLoad() {
 		log = getLogger();
 		mm = new PermitMinerManager(this);
 		this.saveDefaultConfig();
 		conf = this.getConfig();
+		conf.addDefault("allowDataCollection", true);
 		if (!conf.isConfigurationSection("WorldPermitAreas"))
 			conf.createSection("WorldPermitAreas");
 		am = WorldPermitAreaManager.loadFromConfigurationSection(conf.getConfigurationSection("WorldPermitAreas"));
+
+		if (conf.getBoolean("allowDataCollection")) {
+			try {
+				metrics = new Metrics(this);
+				metrics.start();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+		}
 
 	}
 

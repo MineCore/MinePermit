@@ -250,11 +250,11 @@ public class CommandInterpreter implements CommandExecutor {
 		Permit up = ph.getUniversalPermit();
 
 		if (up != null) {
-			player.sendMessage(ChatColor.DARK_GREEN + up.toString());
+			player.sendMessage(ChatColor.BLUE + "Universal Permit: " + ChatColor.DARK_GREEN + up.toString());
 		}
 
 		for (Permit p : ph.getPermits()) {
-			player.sendMessage(ChatColor.AQUA + p.toString());
+			player.sendMessage(ChatColor.BLUE + " " + p.getMaterial() + ": " + ChatColor.AQUA + p.toString());
 		}
 
 	}

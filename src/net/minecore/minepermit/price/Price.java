@@ -99,7 +99,7 @@ public class Price {
 		String s = "";
 
 		for (PermitType pt : cost.keySet())
-			s = s + cost.get(pt) + " for a " + pt.name() + " permit, giving " + amount.get(pt) + "/n";
+			s = s + cost.get(pt) + " for a " + pt.name() + " permit, giving " + amount.get(pt) + "\n";
 
 		return s;
 	}

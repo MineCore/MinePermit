@@ -34,12 +34,13 @@ public class BlockListener implements Listener {
 		if (pa.getEffectiveDepth() < e.getBlock().getY())
 			return;
 
+		System.out.println(pa);
+
 		if (!pa.requiresPermit(e.getBlock().getType())) {
 
 			if (!pa.getAllowMiningUnspecifiedBlocks()) {
 				e.setCancelled(true);
-				p.sendMessage(ChatColor.DARK_GRAY
-						+ "You may not mine these blocks! Mining blocks that cannot have permits bought for is not allowed here.");
+				p.sendMessage(ChatColor.DARK_GRAY + "You may not mine these blocks! Mining blocks that cannot have permits bought for is not allowed here.");
 			}
 			return;
 		}
@@ -54,8 +55,7 @@ public class BlockListener implements Listener {
 
 		if (permit == null) {
 			e.setCancelled(true);
-			p.sendMessage(ChatColor.DARK_RED
-					+ "You may not mine these blocks! Use /permit buy <name> to buy a permit.");
+			p.sendMessage(ChatColor.DARK_RED + "You may not mine these blocks! Use /permit buy <name> to buy a permit.");
 		} else {
 			permit.breakBlock(e.getBlock());
 		}

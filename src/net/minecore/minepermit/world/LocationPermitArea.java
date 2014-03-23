@@ -35,8 +35,7 @@ public class LocationPermitArea extends ContainablePermitArea {
 		int higherZ = Math.max(l1.getBlockZ(), l2.getBlockZ());
 		int lowerZ = Math.min(l1.getBlockZ(), l2.getBlockZ());
 
-		if (l.getBlockX() >= lowerX && l.getBlockX() <= higherX && l.getBlockZ() >= lowerZ
-				&& l.getBlockZ() <= higherZ)
+		if (l.getBlockX() >= lowerX && l.getBlockX() <= higherX && l.getBlockZ() >= lowerZ && l.getBlockZ() <= higherZ)
 			return true;
 
 		return false;
@@ -85,14 +84,12 @@ public class LocationPermitArea extends ContainablePermitArea {
 		return l2;
 	}
 
-	public static LocationPermitArea loadPermitArea(String name, World w, ConfigurationSection cs)
-			throws InvalidConfigurationException {
+	public static LocationPermitArea loadPermitArea(String name, World w, ConfigurationSection cs) throws InvalidConfigurationException {
 
 		if (!cs.isConfigurationSection("prices"))
 			throw new InvalidConfigurationException("No prices section!");
 
-		PriceList pl = InertPriceList.loadFromConfigurationSection(cs
-				.getConfigurationSection("prices"));
+		PriceList pl = InertPriceList.loadFromConfigurationSection(cs.getConfigurationSection("prices"));
 
 		if (!cs.contains("x1") || !cs.contains("z1") || !cs.contains("x2") || !cs.contains("z2"))
 			throw new InvalidConfigurationException("Missing coordinates!");
@@ -176,6 +173,11 @@ public class LocationPermitArea extends ContainablePermitArea {
 		}
 
 		return false;
+	}
+
+	@Override
+	public String toString() {
+		return getStringRepresentation();
 	}
 
 }
